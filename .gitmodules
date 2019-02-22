@@ -1,0 +1,15 @@
+[submodule "salt/formulas/consul"]
+	path = salt/formulas/consul
+	url = git@github.com:saltstack-formulas/consul-formula.git
+[submodule "salt/formulas/docker"]
+	path = salt/formulas/docker
+	url = git@github.com:saltstack-formulas/docker-formula.git
+[submodule "salt/formulas/elrepo"]
+	path = salt/formulas/elrepo
+	url = git@github.com:saltstack-formulas/elrepo-formula.git
+[submodule "salt/formulas/nomad"]
+	path = salt/formulas/nomad
+	url = git@github.com:saltstack-formulas/nomad-formula.git
+[submodule "salt/formulas/vault"]
+	path = salt/formulas/vault
+	url = git@github.com:saltstack-formulas/vault-formula.git
