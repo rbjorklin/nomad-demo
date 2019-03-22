@@ -1,7 +1,4 @@
-The startup bootstrap
-=====================
-
-.. contents::
+.. contents:: The startup bootstrap
 
 What is this?
 =============
