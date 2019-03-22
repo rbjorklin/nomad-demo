@@ -1,0 +1,33 @@
+global
+    log         stdout local2
+    #chroot      /var/lib/haproxy
+    #pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    #user        haproxy
+    #group       haproxy
+    #daemon
+
+    # utilize system-wide crypto-policies
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-server-ciphers PROFILE=SYSTEM
+
+{% include 'haproxy/defaults.cfg' %}
+
+listen stats
+    bind *:1936
+    stats enable
+    stats show-node
+    stats uri /haproxy/stats
+
+frontend main
+    bind *:80
+    monitor-uri /haproxy/status
+
+{%- raw %}
+{{- range services }}
+{{- if .Tags | contains "http" }}
+    use_backend {{ .Name }} if { hdr_beg(Host) -i {{ .Name }} }
+{{- end }}
+{{- end }}
+    default_backend     http_nomatch
+{%- endraw %}

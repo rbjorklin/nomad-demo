@@ -8,7 +8,7 @@ consul:
   user: consul
   group: consul
 
-  version: 1.4.2
+  version: 1.4.3
   download_host: releases.hashicorp.com
 
   config:
@@ -31,7 +31,7 @@ consul:
       - 10.10.10.10
       - 10.10.10.11
       - 10.10.10.12
-    ui: True
+    ui: False
     log_level: info
     data_dir: /var/consul
     connect:

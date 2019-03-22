@@ -16,13 +16,14 @@ vagrant plugin install vagrant-hostmanager vagrant-vbguest
 
 vagrant up
 
-vagrant ssh master -c "sudo salt 'node0*' test.ping"
-vagrant ssh master -c "sudo salt 'node0*' state.sls elrepo"
-vagrant ssh master -c "sudo salt 'node0*' state.sls kernel-lt"
+vagrant ssh master -c "sudo salt '*' test.ping"
+vagrant ssh master -c "sudo salt '*' state.sls elrepo"
+vagrant ssh master -c "sudo salt '*' state.sls kernel-lt"
 
-vagrant reload node01 node02 node03 node04
+vagrant reload
 
-vagrant ssh master -c "sudo salt '*' state.highstate"
+#vagrant ssh master -c "sudo salt '*' state.highstate"
 
 echo "Visit Consul UI here: http://10.10.10.10:8500/ui"
-echo "See HAproxy stats here: http://10.10.10.13:1936/stats or here: http://10.10.10.14:1936/stats"
+echo "Visit Nomad UI here: http://10.10.10.10:4646/ui"
+echo "See HAproxy stats here: http://10.10.10.11:1936/stats or here: http://10.10.10.12:1936/stats"

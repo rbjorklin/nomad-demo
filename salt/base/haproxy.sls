@@ -11,25 +11,30 @@ ensure haproxy systemd service exists:
 
         [Service]
         Type=simple
-        ExecStartPre=/usr/bin/podman run --name haproxy_check_config --rm -v /opt/haproxy/conf:/usr/local/etc/haproxy:ro haproxy:1.9-alpine haproxy -c -f /usr/local/etc/haproxy
-        ExecStart=/usr/bin/podman run --name haproxy --rm -p 80:80 -p 1936:1936 -v /opt/haproxy/conf:/usr/local/etc/haproxy:ro haproxy:1.9-alpine haproxy -W -db -f /usr/local/etc/haproxy
+        ExecStartPre=/usr/bin/podman run --network none --name haproxy_check_config --rm -v /opt/haproxy/conf:/usr/local/etc/haproxy:ro haproxy:1.9-alpine haproxy -c -f /usr/local/etc/haproxy
+        ExecStart=/usr/bin/podman run --network host --name haproxy --rm -p 80:80 -p 443:443 -p 1936:1936 -v /opt/haproxy/conf:/usr/local/etc/haproxy:ro haproxy:1.9-alpine haproxy -W -db -f /usr/local/etc/haproxy
         ExecReload=/usr/bin/podman kill -s USR2 haproxy
         ExecStop=/usr/bin/podman rm -f haproxy
 
         [Install]
         WantedBy=multi-user.target
 
-ensure haproxy frontend config exists:
-  file.managed:
-    - name: /opt/haproxy/conf/frontend.cfg
-    - source: salt://haproxy_frontend.cfg
+ensure haproxy folder exists:
+  file.directory:
+    - name: /opt/haproxy/conf
     - makedirs: True
 
-ensure haproxy backend template exists:
-  file.managed:
-    - name: /etc/consul-template/tmpl-source/haproxy_backend.cfg.ctmpl
-    - source: salt://haproxy_backend.cfg.ctmpl
-    - makedirs: True
+#ensure haproxy backend template exists:
+#  file.managed:
+#    - name: /etc/consul-template/tmpl-source/haproxy_backend.cfg.ctmpl
+#    - source: salt://haproxy_backend.cfg.ctmpl.j2
+#    - makedirs: True
+#
+#ensure haproxy frontend template exists:
+#  file.managed:
+#    - name: /etc/consul-template/tmpl-source/haproxy_frontend.cfg.ctmpl
+#    - source: salt://haproxy_frontend.cfg.ctmpl.j2
+#    - makedirs: True
 
 ensure haproxy enabled and running:
   service.running:

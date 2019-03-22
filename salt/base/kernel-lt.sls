@@ -16,3 +16,4 @@ regenerate grub.cfg:
     - name: grub2-mkconfig -o /boot/grub2/grub.cfg
     - onchanges:
       - file: use first listed kernel
+      - pkg: ensure long-term kernel installed

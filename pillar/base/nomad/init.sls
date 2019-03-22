@@ -34,6 +34,19 @@ nomad:
              {%- endfor %}"
     client:
       enabled: True
+      server_join:
+        retry_join:
+          - 10.10.10.10
+          - 10.10.10.11
+          - 10.10.10.12
+      network_interface: "{%- for interface, ips in grains['ip4_interfaces'].items()
+                  if interface not in ['lo', 'cni0', 'docker0'] and
+                  not interface.startswith('veth') and
+                  ips|length > 0 %}
+                  {%- if loop.first %}
+                    {{- interface -}}
+                  {%- endif %}
+             {%- endfor %}"
 # Sample configuration for a Consul deployment:
 #    consul:
 #      ssl: True

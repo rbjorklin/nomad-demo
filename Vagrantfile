@@ -20,14 +20,22 @@ Vagrant.configure("2") do |config|
   config.hostmanager.include_offline = false
 
   (1..$nodes).each do |i|
-    config.vm.define vm_name = "node0%d" % i do |node|
-      node.hostmanager.aliases = "node0%d" % i
-      node.vm.box = "centos/7"
-      node.vbguest.auto_update = false 
-      node.vm.hostname = "node0%d.vagrant.rbjorklin.com" % i
-      node.vm.network "private_network", ip: "10.10.10.1%d" % i
-      node.vm.synced_folder '.', '/vagrant', disabled: true
-      node.vm.provision :salt do |salt|
+    config.vm.define vm_name = "node0%d" % i do |config|
+      config.hostmanager.aliases = "node0%d" % i
+      config.vm.box = "centos/7"
+      config.vbguest.auto_update = false 
+      config.vm.hostname = "node0%d.vagrant.rbjorklin.com" % i
+      config.vm.network "private_network", ip: "10.10.10.1%d" % i
+      config.vm.synced_folder '.', '/vagrant', disabled: true
+      config.vm.provider "virtualbox" do |vb|
+        unless File.exist?("node0%d_additional_disk.vdi" % i)
+          vb.customize ['createhd', '--filename', "node0%d_additional_disk" % i, '--size', 5 * 1024]
+        end
+        vb.customize ['storageattach', :id, '--storagectl', $storage_controller, '--port', 1, '--device', 0, '--type', 'hdd', '--medium', "node0%d_additional_disk.vdi" % i]
+        vb.memory = $node_memory
+        vb.cpus = $node_cpu_count
+      end
+      config.vm.provision :salt do |salt|
         salt.install_type = "stable"
         salt.minion_key = "pki/node0%d.vagrant.rbjorklin.com.pem" % i
         salt.minion_pub = "pki/node0%d.vagrant.rbjorklin.com.pub" % i
@@ -36,23 +44,30 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define "master" do |node|
-    node.hostmanager.aliases = "salt"
-    node.vm.box = "centos/7"
-    node.vbguest.auto_update = false
-    node.vm.hostname = "salt.vagrant.rbjorklin.com"
-    node.vm.network "private_network", ip: "10.10.10.10"
-    node.vm.synced_folder ".", "/srv", type: "rsync", rsync__exclude: ".git/"
-    node.vm.provision :salt do |salt|
+  config.vm.define "master" do |config|
+    config.hostmanager.aliases = "salt"
+    config.vm.box = "centos/7"
+    config.vbguest.auto_update = false
+    config.vm.hostname = "salt.vagrant.rbjorklin.com"
+    config.vm.network "private_network", ip: "10.10.10.10"
+    config.vm.synced_folder ".", "/srv", type: "rsync", rsync__exclude: ".git/"
+    config.vm.provider "virtualbox" do |vb|
+      unless File.exist?("master_additional_disk.vdi")
+        vb.customize ['createhd', '--filename', "master_additional_disk", '--size', 5 * 1024]
+      end
+      vb.customize ['storageattach', :id, '--storagectl', $storage_controller, '--port', 1, '--device', 0, '--type', 'hdd', '--medium', "master_additional_disk.vdi"]
+      vb.memory = $node_memory
+      vb.cpus = $node_cpu_count
+    end
+    config.vm.provision :salt do |salt|
       salt.install_type = "stable"
       salt.master_config = "master"
-      salt.run_highstate = true
+      #salt.run_highstate = true
       salt.install_master = true
       salt.colorize = true
       salt.minion_key = "pki/salt.vagrant.rbjorklin.com.pem"
       salt.minion_pub = "pki/salt.vagrant.rbjorklin.com.pub"
       salt.seed_master = seed
-      salt.colorize = true
     end
   end
 

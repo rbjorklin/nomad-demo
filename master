@@ -678,6 +678,9 @@ file_roots:
     - /srv/salt/formulas/elrepo
     - /srv/salt/formulas/nomad
     - /srv/salt/formulas/docker
+    - /srv/salt/formulas/bind
+    - /srv/salt/formulas/ceph
+    - /srv/salt/formulas/chrony
     - /srv/files/base
 
 
@@ -915,7 +918,7 @@ pillar_roots:
 #pillar_source_merging_strategy: smart
 
 # Recursively merge lists by aggregating them instead of replacing them.
-#pillar_merge_lists: False
+pillar_merge_lists: True
 
 # Set this option to True to force the pillarenv to be the same as the effective
 # saltenv when running states. If pillarenv is specified this option will be

@@ -3,13 +3,30 @@
 base:
   '*':
     - elrepo
-    - consul
+  salt.vagrant.rbjorklin.com:
+    - role.nomad
+    - role.consul
+    - role.bind
+    - role.haproxy
+    - role.ceph
+    # end roles
     - nomad
-  (salt|node0[12])\.vagrant\.rbjorklin\.com:
-    - match: pcre
-    - consul.server
     - nomad.server
+    - consul
+    - consul.ui # Used by haproxy
+    - consul.server
+    - consul.template
+    - consul.template.haproxy
+    - consul.service.haproxy
+    - bind
+    - ceph
   node0[12].vagrant.rbjorklin.com:
-    - consul.discover-service
-  node0[34].vagrant.rbjorklin.com:
-    - consul-template
+    - role.nomad
+    - role.consul
+    - role.ceph
+    # end roles
+    - nomad
+    - nomad.server
+    - consul
+    - consul.server
+    - ceph

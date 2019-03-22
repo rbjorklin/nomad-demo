@@ -4,4 +4,3 @@ consul:
   config:
     server: True
     bootstrap_expect: 3
-    client_addr: 0.0.0.0

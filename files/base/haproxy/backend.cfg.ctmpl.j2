@@ -1,0 +1,23 @@
+{% include 'haproxy/defaults.cfg' %}
+
+backend http_nomatch
+    mode http
+    http-request deny deny_status 400
+
+{%- raw %}
+{{- range services }}
+{{- if .Tags | contains "http" }}
+backend {{ .Name }}
+{{- if .Tags | contains "sticky" }}
+    balance url_param session check_post
+    hash-type consistent
+    hash-balance-factor 150
+{{- end }}
+    {{- range service .Name }}
+    {{- if .Tags | contains "http" }}
+    server  {{ .Node }} {{ .Address }}:{{ .Port }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{ end }}
+{%- endraw %}
