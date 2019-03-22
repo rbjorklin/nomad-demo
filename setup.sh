@@ -4,7 +4,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-vagrant plugin install vagrant-vbguest
 vagrant plugin install vagrant-hostmanager
 vagrant up
 
@@ -33,7 +32,7 @@ vagrant ssh master -c "sudo salt '*' cmd.run 'systemctl restart rbd-docker-plugi
 vagrant ssh master -c "cd /srv/nomad ; nomad job run jenkins.nomad"
 
 cat << EOF
-Temporary override your DNS server by editing /etc/resolv.conf to use "nameserver 10.10.10.10"
+Optionally override your DNS server by editing /etc/resolv.conf to use "nameserver 10.10.10.10"
 Visit Consul UI here: http://consul-ui.vagrant.rbjorklin.com
 Visit Nomad UI here: http://nomad.vagrant.rbjorklin.com
 Visit Jenkins here: http://jenkins.vagrant.rbjorklin.com

@@ -16,14 +16,13 @@ Vagrant.configure("2") do |config|
 
   config.hostmanager.enabled = true
   config.hostmanager.manage_guest = true
-  config.hostmanager.manage_host = false
+  config.hostmanager.manage_host = true
   config.hostmanager.include_offline = false
 
   (1..$nodes).each do |i|
     config.vm.define vm_name = "node0%d" % i do |config|
       config.hostmanager.aliases = "node0%d" % i
       config.vm.box = "centos/7"
-      config.vbguest.auto_update = false 
       config.vm.hostname = "node0%d.vagrant.rbjorklin.com" % i
       config.vm.network "private_network", ip: "10.10.10.1%d" % i
       config.vm.synced_folder '.', '/vagrant', disabled: true
@@ -45,9 +44,8 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "master" do |config|
-    config.hostmanager.aliases = "salt"
+    config.hostmanager.aliases = "salt consul-ui.vagrant.rbjorklin.com nomad.vagrant.rbjorklin.com jenkins.vagrant.rbjorklin.com haproxy.vagrant.rbjorklin.com"
     config.vm.box = "centos/7"
-    config.vbguest.auto_update = false
     config.vm.hostname = "salt.vagrant.rbjorklin.com"
     config.vm.network "private_network", ip: "10.10.10.10"
     config.vm.synced_folder '.', '/vagrant', disabled: true
