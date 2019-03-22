@@ -10,6 +10,8 @@ ceph:
       # Set cluster id, use command 'uuidgen' to generate it
       fsid: 0fffffff-35be-40a0-a76e-fff899cb85da
       authentication_type: 'none'
+      # see: https://tracker.ceph.com/issues/15000
+      rbd_default_features: 3 # the rbd-docker-plugin fails with exclusive locks
 
   # Ceph mon list, minimum of 3 is recommended for quorum
   mon_hosts:

@@ -13,15 +13,19 @@ global
 
 {% include 'haproxy/defaults.cfg' %}
 
-listen stats
-    bind *:1936
-    stats enable
-    stats show-node
-    stats uri /haproxy/stats
+#listen stats
+#    bind *:1936
+#    stats enable
+#    stats show-node
+#    stats uri /haproxy/stats
 
 frontend main
     bind *:80
     monitor-uri /haproxy/status
+    # Don't expose stats outside of demo purposes...
+    stats enable
+    stats show-node
+    stats uri /haproxy/stats
 
 {%- raw %}
 {{- range services }}

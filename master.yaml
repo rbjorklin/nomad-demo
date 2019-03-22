@@ -857,6 +857,11 @@ pillar_roots:
 #  - hiera: /etc/hiera.yaml
 #  - cmd_yaml: cat /etc/salt/yaml
 
+#vagrant_consul_config:
+#  consul.dc: vagrant
+#
+#ext_pillar:
+#  - consul: vagrant_consul_config root=salt/service/bind target="I@role:bind"
 
 # A list of paths to be recursively decrypted during pillar compilation.
 # Entries in this list can be formatted either as a simple string, or as a

@@ -1,9 +1,10 @@
 # vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent syntax=yaml:
 
-ensure long-term kernel installed:
+ensure newer kernel installed:
   pkg.installed:
     - pkgs:
-      - kernel-lt
+      - kernel-ml
+      #- kernel-lt # Prefer this for stability but Ceph Mimic requires a newer kernel
 
 use first listed kernel:
   file.replace:
@@ -16,4 +17,4 @@ regenerate grub.cfg:
     - name: grub2-mkconfig -o /boot/grub2/grub.cfg
     - onchanges:
       - file: use first listed kernel
-      - pkg: ensure long-term kernel installed
+      - pkg: ensure newer kernel installed

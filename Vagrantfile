@@ -50,6 +50,7 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
     config.vm.hostname = "salt.vagrant.rbjorklin.com"
     config.vm.network "private_network", ip: "10.10.10.10"
+    config.vm.synced_folder '.', '/vagrant', disabled: true
     config.vm.synced_folder ".", "/srv", type: "rsync", rsync__exclude: ".git/"
     config.vm.provider "virtualbox" do |vb|
       unless File.exist?("master_additional_disk.vdi")
@@ -61,7 +62,7 @@ Vagrant.configure("2") do |config|
     end
     config.vm.provision :salt do |salt|
       salt.install_type = "stable"
-      salt.master_config = "master"
+      salt.master_config = "master.yaml"
       #salt.run_highstate = true
       salt.install_master = true
       salt.colorize = true

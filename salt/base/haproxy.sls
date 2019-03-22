@@ -24,11 +24,12 @@ ensure haproxy folder exists:
     - name: /opt/haproxy/conf
     - makedirs: True
 
-#ensure haproxy backend template exists:
-#  file.managed:
-#    - name: /etc/consul-template/tmpl-source/haproxy_backend.cfg.ctmpl
-#    - source: salt://haproxy_backend.cfg.ctmpl.j2
-#    - makedirs: True
+ensure haproxy bootstrap config exists:
+  file.managed:
+    - name: /opt/haproxy/conf/frontend.cfg
+    - source: salt://haproxy/bootstrap.cfg.j2
+    - template: jinja
+    - makedirs: True
 #
 #ensure haproxy frontend template exists:
 #  file.managed:

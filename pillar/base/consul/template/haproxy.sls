@@ -4,6 +4,7 @@ consul_template:
   tmpl:
     - name: haproxy_backend.cfg
       source: salt://haproxy/backend.cfg.ctmpl.j2
+      template_engine: jinja
       config:
         template:
           source: /etc/consul-template/tmpl-source/haproxy_backend.cfg.ctmpl
@@ -11,6 +12,7 @@ consul_template:
           command: systemctl reload haproxy
     - name: haproxy_frontend.cfg
       source: salt://haproxy/frontend.cfg.ctmpl.j2
+      template_engine: jinja
       config:
         template:
           source: /etc/consul-template/tmpl-source/haproxy_frontend.cfg.ctmpl

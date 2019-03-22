@@ -34,6 +34,10 @@ job "jenkins" {
           http = 8080
           build_executor = 50000
         }
+        volume_driver = "rbd"
+        volumes = [
+          "jenkins_home:/var/jenkins_home"
+        ]
       }
       resources {
         cpu    = 500 # 500 MHz
