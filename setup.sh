@@ -4,7 +4,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-vagrant plugin install vagrant-hostmanager
+vagrant plugin install vagrant-hostmanager vagrant-vbguest
 vagrant up
 
 vagrant ssh master -c "sudo /bin/bash -c \"yum install -y python-pip ;\

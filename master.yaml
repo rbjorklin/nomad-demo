@@ -681,6 +681,7 @@ file_roots:
     - /srv/salt/formulas/bind
     - /srv/salt/formulas/ceph
     - /srv/salt/formulas/chrony
+    - /srv/salt/formulas/vault
     - /srv/files/base
 
 
