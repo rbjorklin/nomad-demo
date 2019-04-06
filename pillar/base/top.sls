@@ -9,6 +9,7 @@ base:
     - role.bind
     - role.haproxy
     - role.ceph
+    - role.vault
     # end roles
     - nomad
     - nomad.server
@@ -20,13 +21,16 @@ base:
     - consul.service.haproxy
     - bind
     - ceph
+    - vault
   node0[12].vagrant.rbjorklin.com:
     - role.nomad
     - role.consul
     - role.ceph
+    - role.vault
     # end roles
     - nomad
     - nomad.server
     - consul
     - consul.server
     - ceph
+    - vault
