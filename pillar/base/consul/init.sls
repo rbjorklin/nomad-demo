@@ -8,7 +8,7 @@ consul:
   user: consul
   group: consul
 
-  version: 1.4.3
+  version: 1.4.4
   download_host: releases.hashicorp.com
 
   config:
@@ -25,12 +25,12 @@ consul:
 
     enable_debug: True
     datacenter: vagrant
-    encrypt: "RIxqpNlOXqtr/j4BgvIMEw=="
+    encrypt: "878aeZQ2f1V1+JOp17GuhQ=="
     retry_interval: 15s
     retry_join:
-      - 10.10.10.10
-      - 10.10.10.11
-      - 10.10.10.12
+{% for minion, addrs in salt['mine.get']('consul:config:server:True', fun='network.ip_addrs', tgt_type='pillar') | dictsort() %}
+      - {{ addrs[0] }}
+{% endfor %}
     ui: False
     log_level: info
     data_dir: /var/consul

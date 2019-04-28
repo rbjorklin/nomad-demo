@@ -3,6 +3,7 @@
 base:
   '*':
     - elrepo
+    - mine.ip4_addrs
   salt.vagrant.rbjorklin.com:
     - role.nomad
     - role.consul
