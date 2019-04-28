@@ -11,3 +11,31 @@ resource "hcloud_server" "nodes" {
   ssh_keys    = "${var.ssh_keys}"
   labels      = "${var.labels}"
 }
+
+resource "null_resource" "bootstrap-nodes" {
+  count = "${var.count}"
+
+  connection {
+    user = "root"
+    host = "${element(hcloud_server.nodes.*.ipv4_address, count.index)}"
+  }
+
+  provisioner "file" {
+    source      = "bootstrap.sh"
+    destination = "/tmp/bootstrap.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/bootstrap.sh",
+      "/tmp/bootstrap.sh ${count.index} node0${count.index+1}.${var.domain} ${join(" ", hcloud_server.nodes.*.ipv4_address)}",
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "yum upgrade -y",
+      "systemctl reboot",
+    ]
+  }
+}

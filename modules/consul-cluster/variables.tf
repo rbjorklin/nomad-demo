@@ -1,4 +1,5 @@
 variable "hcloud_token" {}
+variable "domain" {}
 
 variable "ssh_keys" {
   type = "list"
