@@ -19,20 +19,30 @@ Components used
 * Ceph_ - Storage solution for objects, block & filesystems
 * Bind_ - Old school DNS server
 
-Test drive the whole shebang
-============================
+Test drive the whole thing
+==========================
 
+This will setup everything locally with Vagrant
 ::
 
   git clone --recurse-submodules <repo url>
   ./setup.sh
+
+Or you could setup the whole thing in Hetzner's Cloud
+::
+
+  export TF_VAR_ssh_key="<insert name of hetzner ssh key here>"
+  export TF_VAR_hcloud_token="<insert hcloud token here>"
+  git clone --recurse-submodules <repo url>
+  terraform apply
+
 
 Troubleshooting
 ===============
 In case Vagrant fails to add the extra disks the storage controller might have to be adjusted.
 You can find out what your VMs were created with by running:
 ``VBoxManage list vms | cut -d \  -f 1 | xargs -i VBoxManage showvminfo {} | grep "Storage Controller Name"``
-and the updating the ``$storage_controller`` field in ``config.rb``
+and then update the ``$storage_controller`` field in ``config.rb``
 
 .. _Vagrant: https://www.vagrantup.com/
 .. _Saltstack: https://www.saltstack.com/
