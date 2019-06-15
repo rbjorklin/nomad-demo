@@ -8,6 +8,6 @@ nomad:
       encrypt: "AaABbB+CcCdDdEeeFFfggG=="
       server_join:
         retry_join:
-          - 10.10.10.10
-          - 10.10.10.11
-          - 10.10.10.12
+          - 116.203.116.179
+          - 116.203.116.200
+          - 116.203.116.188

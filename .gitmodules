@@ -1,26 +1,25 @@
 [submodule "salt/formulas/consul"]
         path = salt/formulas/consul
-        url = git@github.com:rbjorklin/consul-formula.git
-        branch = 2019.02-fixes
+        url = https://github.com/saltstack-formulas/consul-formula.git
 [submodule "salt/formulas/docker"]
         path = salt/formulas/docker
-        url = git@github.com:saltstack-formulas/docker-formula.git
+        url = https://github.com/saltstack-formulas/docker-formula.git
 [submodule "salt/formulas/elrepo"]
         path = salt/formulas/elrepo
-        url = git@github.com:saltstack-formulas/elrepo-formula.git
+        url = https://github.com/saltstack-formulas/elrepo-formula.git
 [submodule "salt/formulas/nomad"]
         path = salt/formulas/nomad
-        url = git@github.com:saltstack-formulas/nomad-formula.git
+        url = https://github.com/saltstack-formulas/nomad-formula.git
 [submodule "salt/formulas/vault"]
         path = salt/formulas/vault
-        url = git@github.com:saltstack-formulas/vault-formula.git
+        url = https://github.com/saltstack-formulas/vault-formula.git
 [submodule "salt/formulas/bind"]
         path = salt/formulas/bind
-        url = git@github.com:saltstack-formulas/bind-formula.git
+        url = https://github.com/saltstack-formulas/bind-formula.git
 [submodule "salt/formulas/ceph"]
         path = salt/formulas/ceph
-        url = git@github.com:rbjorklin/ceph-formula.git
+        url = https://github.com/rbjorklin/ceph-formula.git
         branch = add-mgr
 [submodule "salt/formulas/chrony"]
         path = salt/formulas/chrony
-        url = git@github.com:saltstack-formulas/chrony-formula.git
+        url = https://github.com/saltstack-formulas/chrony-formula.git

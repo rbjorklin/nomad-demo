@@ -4,13 +4,13 @@ base:
   '*':
     - elrepo
     - mine.ip4_addrs
-  salt.vagrant.rbjorklin.com:
-    - role.nomad
+  node01.rbjorklin.com:
     - role.consul
-    - role.bind
-    - role.haproxy
-    - role.ceph
-    - role.vault
+    - role.nomad
+    #- role.bind
+    #- role.haproxy
+    #- role.ceph
+    #- role.vault
     # end roles
     - nomad
     - nomad.server
@@ -23,11 +23,11 @@ base:
     - bind
     - ceph
     - vault
-  node0[12].vagrant.rbjorklin.com:
-    - role.nomad
+  node0[23].rbjorklin.com:
     - role.consul
-    - role.ceph
-    - role.vault
+    - role.nomad
+    #- role.ceph
+    #- role.vault
     # end roles
     - nomad
     - nomad.server

@@ -1,9 +1,10 @@
 # vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent syntax=yaml:
 
 nomad:
-  bin_dir: /usr/bin
-  version: '0.8.7'
-  config_dir: /etc/nomad
+  bin_dir: /usr/local/bin
+  version: '0.9.3'
+  service_hash: 5183f15191500121589f50aea2e10af76e9d6684db72b791f9126ec6855445d5
+  config_dir: /etc/nomad.d
   config:
     data_dir: /var/lib/nomad
     # Nodes not bound to consul must be configured to advertise themselves.
@@ -36,9 +37,9 @@ nomad:
       enabled: True
       server_join:
         retry_join:
-          - 10.10.10.10
-          - 10.10.10.11
-          - 10.10.10.12
+          - 116.203.116.179
+          - 116.203.116.200
+          - 116.203.116.188
       network_interface: "{%- for interface, ips in grains['ip4_interfaces'].items()
                   if interface not in ['lo', 'cni0', 'docker0'] and
                   not interface.startswith('veth') and
