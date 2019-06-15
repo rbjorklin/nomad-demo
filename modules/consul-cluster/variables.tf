@@ -1,12 +1,15 @@
-variable "hcloud_token" {}
-variable "domain" {}
+variable "hcloud_token" {
+}
+
+variable "domain" {
+}
 
 variable "ssh_keys" {
-  type = "list"
+  type = list(string)
 }
 
 variable "labels" {
-  type = "map"
+  type = map(string)
 }
 
 # Optionals
@@ -23,6 +26,7 @@ variable "location" {
   default = "nbg1"
 }
 
-variable "count" {
+variable "amount" {
   default = 1
 }
+

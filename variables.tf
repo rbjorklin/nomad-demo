@@ -1,2 +1,6 @@
-variable "hcloud_token" {}
-variable "ssh_key" {}
+variable "hcloud_token" {
+}
+
+variable "ssh_key" {
+}
+
