@@ -8,10 +8,9 @@ module "hcloud-consul-cluster" {
   }
 
   hcloud_token = var.hcloud_token
-  amount        = 3
+  amount       = 3
   domain       = "rbjorklin.com"
   #location     = "fsn1"
   #image        = "centos-7"
   #server_type  = "cx21"
 }
-

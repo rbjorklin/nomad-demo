@@ -21,4 +21,3 @@ output "datacenter" {
 output "image" {
   value = module.hcloud-consul-cluster.image
 }
-

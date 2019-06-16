@@ -29,4 +29,3 @@ variable "location" {
 variable "amount" {
   default = 1
 }
-

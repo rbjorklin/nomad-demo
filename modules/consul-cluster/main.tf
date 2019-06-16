@@ -44,4 +44,3 @@ resource "null_resource" "bootstrap-nodes" {
     ]
   }
 }
-

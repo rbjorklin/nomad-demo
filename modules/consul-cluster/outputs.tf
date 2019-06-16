@@ -21,4 +21,3 @@ output "datacenter" {
 output "image" {
   value = [hcloud_server.nodes.*.image]
 }
-
