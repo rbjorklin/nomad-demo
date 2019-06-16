@@ -40,7 +40,6 @@ resource "null_resource" "bootstrap-nodes" {
   provisioner "remote-exec" {
     inline = [
       "yum upgrade -y",
-      "systemctl reboot",
     ]
   }
 }
