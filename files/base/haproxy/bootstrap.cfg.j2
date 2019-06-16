@@ -11,8 +11,8 @@ global
 frontend main
     bind *:80
     monitor-uri /haproxy/status
-    default_backend     http_nomatch
+    default_backend     bootstrap
 
-backend http_nomatch
+backend bootstrap
     mode http
     http-request deny deny_status 400

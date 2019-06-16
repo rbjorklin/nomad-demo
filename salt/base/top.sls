@@ -4,8 +4,8 @@ base:
   'salt*':
     - rbd-docker-plugin.build
   '*':
-    - elrepo
-    - kernel-lt
+    #- elrepo
+    #- kernel-lt
     - chrony
   'role:ceph':
     - match: pillar

@@ -7,8 +7,8 @@ base:
   node01.rbjorklin.com:
     - role.consul
     - role.nomad
+    - role.haproxy
     #- role.bind
-    #- role.haproxy
     #- role.ceph
     #- role.vault
     # end roles
@@ -26,6 +26,7 @@ base:
   node0[23].rbjorklin.com:
     - role.consul
     - role.nomad
+    - role.haproxy
     #- role.ceph
     #- role.vault
     # end roles
@@ -33,5 +34,8 @@ base:
     - nomad.server
     - consul
     - consul.server
+    - consul.template
+    - consul.template.haproxy
+    - consul.service.haproxy
     - ceph
     - vault

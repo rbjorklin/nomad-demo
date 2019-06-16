@@ -8,7 +8,7 @@ consul:
   user: consul
   group: consul
 
-  version: 1.4.4
+  version: 1.5.1
   download_host: releases.hashicorp.com
 
   config:
@@ -24,13 +24,13 @@ consul:
                      {%- endfor %}"
 
     enable_debug: True
-    datacenter: vagrant
+    datacenter: nbg1
     encrypt: "878aeZQ2f1V1+JOp17GuhQ=="
     retry_interval: 15s
     retry_join:
       - 116.203.116.179
-      - 116.203.116.200
       - 116.203.116.188
+      - 116.203.116.200
     ui: False
     log_level: info
     data_dir: /var/consul
