@@ -1,5 +1,8 @@
 {% include 'haproxy/defaults.cfg' %}
 
+resolvers consul
+  nameserver localhost 127.0.0.1:8600
+
 backend http_nomatch
     mode http
     http-request deny deny_status 400
@@ -15,7 +18,7 @@ backend {{ .Name }}
 {{- end }}
     {{- range service .Name }}
     {{- if .Tags | contains "http" }}
-    server  {{ .Node }} {{ .Address }}:{{ .Port }}
+    server  {{ .Node }} {{ .Address }}:{{ .Port }} resolvers consul
     {{- end }}
     {{- end }}
 {{- end }}

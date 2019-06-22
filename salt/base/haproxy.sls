@@ -11,7 +11,7 @@ ensure haproxy systemd service exists:
 
         [Service]
         Type=simple
-        ExecStart=/usr/bin/podman run --log-opt path=/dev/null --network host --name haproxy --rm -p 80:80 -p 443:443 -p 1936:1936 -v /opt/haproxy/conf:/usr/local/etc/haproxy:ro haproxy:1.9-alpine haproxy -W -db -f /usr/local/etc/haproxy
+        ExecStart=/usr/bin/podman run --log-opt path=/dev/null --network host --name haproxy --rm -p 80:80 -p 443:443 -p 1936:1936 -v /opt/haproxy/conf:/usr/local/etc/haproxy:ro haproxy:alpine haproxy -W -db -f /usr/local/etc/haproxy
         ExecReload=/usr/bin/podman kill -s USR2 haproxy
         ExecStop=/usr/bin/podman rm -f haproxy
 

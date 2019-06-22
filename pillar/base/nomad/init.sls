@@ -7,39 +7,22 @@ nomad:
   config_dir: /etc/nomad.d
   config:
     data_dir: /var/lib/nomad
+    bind_addr: "{%- for interface, ips in grains['ip4_interfaces'].items()
+                  if interface not in ['lo', 'cni0', 'docker0'] and
+                  not interface.startswith('veth') and
+                  ips|length > 0 %}
+                  {%- if loop.first %}
+                    {{- ips[0] -}}
+                  {%- endif %}
+                {%- endfor %}"
     # Nodes not bound to consul must be configured to advertise themselves.
-    advertise:
-      http: "{%- for interface, ips in grains['ip4_interfaces'].items()
-                  if interface not in ['lo', 'cni0', 'docker0'] and
-                  not interface.startswith('veth') and
-                  ips|length > 0 %}
-                  {%- if loop.first %}
-                    {{- ips[0] -}}
-                  {%- endif %}
-             {%- endfor %}"
-      rpc: "{%- for interface, ips in grains['ip4_interfaces'].items()
-                  if interface not in ['lo', 'cni0', 'docker0'] and
-                  not interface.startswith('veth') and
-                  ips|length > 0 %}
-                  {%- if loop.first %}
-                    {{- ips[0] -}}
-                  {%- endif %}
-            {%- endfor %}"
-      serf: "{%- for interface, ips in grains['ip4_interfaces'].items()
-                  if interface not in ['lo', 'cni0', 'docker0'] and
-                  not interface.startswith('veth') and
-                  ips|length > 0 %}
-                  {%- if loop.first %}
-                    {{- ips[0] -}}
-                  {%- endif %}
-             {%- endfor %}"
     client:
       enabled: True
       server_join:
         retry_join:
-          - 116.203.116.179
-          - 116.203.116.200
-          - 116.203.116.188
+        {% for _, addrs in salt.saltutil.runner('mine.get', tgt='nomad:config:server:enabled:True', fun='network.ip_addrs', tgt_type='pillar') | dictsort() %}
+          - {{ addrs[0] }}
+        {% endfor %}
       network_interface: "{%- for interface, ips in grains['ip4_interfaces'].items()
                   if interface not in ['lo', 'cni0', 'docker0'] and
                   not interface.startswith('veth') and

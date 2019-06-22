@@ -2,7 +2,7 @@
 # vim: syntax=yaml softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent
 
 vault:
-  version: 1.1.0
+  version: 1.1.3
   platform: linux_amd64
   dev_mode: False
   verify_download: True
@@ -13,6 +13,8 @@ vault:
       consul:
         address: "127.0.0.1:8500"
         path: "vault/"
+        service_tags: "http"
+        service_address: ""
     listener:
       tcp:
         address: "0.0.0.0:8200"

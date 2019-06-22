@@ -28,11 +28,9 @@ consul:
     encrypt: "878aeZQ2f1V1+JOp17GuhQ=="
     retry_interval: 15s
     retry_join:
-      - 116.203.116.179
-      - 116.203.116.188
-      - 116.203.116.200
+    {% for _, addrs in salt.saltutil.runner('mine.get', tgt='consul:config:server:True', fun='network.ip_addrs', tgt_type='pillar') | dictsort() %}
+      - {{ addrs[0] }}
+    {% endfor %}
     ui: False
     log_level: info
     data_dir: /var/consul
-    connect:
-      enabled: True

@@ -4,6 +4,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+SALT_VERSION="v2019.2.0"
 TF_INSTANCE_INDEX=$1
 HOST_NAME=$2
 DOMAIN=${HOST_NAME#*.}
@@ -28,7 +29,7 @@ fi
 
 curl -so /tmp/bootstrap-salt.sh -L https://bootstrap.saltstack.com
 chmod +x /tmp/bootstrap-salt.sh
-/tmp/bootstrap-salt.sh ${INSTALL_MASTER_OPT} -i $HOST_NAME -A salt.${DOMAIN}
+/tmp/bootstrap-salt.sh ${INSTALL_MASTER_OPT} -i $HOST_NAME -A salt.${DOMAIN} -x python3 -P git ${SALT_VERSION}
 
 if [[ $TF_INSTANCE_INDEX -eq 0 ]] ; then
     yum install -y rng-tools gnupg

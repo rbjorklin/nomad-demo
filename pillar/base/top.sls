@@ -33,6 +33,7 @@ base:
     - nomad
     - nomad.server
     - consul
+    - consul.ui # Used by haproxy
     - consul.server
     - consul.template
     - consul.template.haproxy

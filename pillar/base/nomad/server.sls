@@ -8,6 +8,6 @@ nomad:
       encrypt: "AaABbB+CcCdDdEeeFFfggG=="
       server_join:
         retry_join:
-          - 116.203.116.179
-          - 116.203.116.200
-          - 116.203.116.188
+        {% for _, addrs in salt.saltutil.runner('mine.get', tgt='nomad:config:server:enabled:True', fun='network.ip_addrs', tgt_type='pillar') | dictsort() %}
+          - {{ addrs[0] }}
+        {% endfor %}
