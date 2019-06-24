@@ -7,6 +7,7 @@ nomad:
   config_dir: /etc/nomad.d
   config:
     data_dir: /var/lib/nomad
+    datacenter: nbg1
     bind_addr: "{%- for interface, ips in grains['ip4_interfaces'].items()
                   if interface not in ['lo', 'cni0', 'docker0'] and
                   not interface.startswith('veth') and

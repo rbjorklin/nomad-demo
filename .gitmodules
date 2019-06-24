@@ -23,3 +23,6 @@
 [submodule "salt/formulas/chrony"]
         path = salt/formulas/chrony
         url = https://github.com/saltstack-formulas/chrony-formula.git
+[submodule "salt/formulas/firewalld"]
+	path = salt/formulas/firewalld
+	url = https://github.com/saltstack-formulas/firewalld-formula.git

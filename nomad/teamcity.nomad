@@ -1,5 +1,5 @@
 job "teamcity" {
-  datacenters = ["dc1"]
+  datacenters = ["nbg1"]
   type = "service"
   constraint {
     operator  = "distinct_hosts"

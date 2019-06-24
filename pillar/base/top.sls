@@ -4,6 +4,9 @@ base:
   '*':
     - elrepo
     - mine.ip4_addrs
+    - firewalld
+    - firewalld.hetzner
+    - firewalld.haproxy
   node01.rbjorklin.com:
     - role.consul
     - role.nomad
