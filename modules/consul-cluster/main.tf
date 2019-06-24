@@ -4,7 +4,7 @@ provider "hcloud" {
 
 resource "hcloud_server" "nodes" {
   count       = var.amount
-  name        = "node0${count.index + 1}"
+  name        = "${var.location}${count.index + 1}"
   image       = var.image
   server_type = var.server_type
   location    = var.location

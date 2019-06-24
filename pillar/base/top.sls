@@ -5,7 +5,7 @@ base:
     - elrepo
     - mine.ip4_addrs
     - firewalld
-    - firewalld.hetzner
+    - firewalld.hetzner-nbg1
     - firewalld.haproxy
   node01.rbjorklin.com:
     - role.consul
