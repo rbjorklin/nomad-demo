@@ -8,3 +8,4 @@ firewalld:
         - ssh
         - http
         - https
+        - netdata

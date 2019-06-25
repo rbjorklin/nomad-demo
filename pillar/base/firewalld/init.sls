@@ -38,4 +38,9 @@ firewalld:
         tcp:
           - 4505
           - 4506
-
+    netdata:
+      short: netdata
+      description: "netdata"
+      ports:
+        tcp:
+          - 19999

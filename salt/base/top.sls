@@ -7,6 +7,7 @@ base:
     #- elrepo
     #- kernel-lt
     - chrony
+    - netdata
   'role:ceph':
     - match: pillar
     - ceph
