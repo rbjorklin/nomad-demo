@@ -1,8 +1,8 @@
 # vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent syntax=yaml:
 
 base:
-  'salt*':
-    - rbd-docker-plugin.build
+  #'salt*':
+  #  - rbd-docker-plugin.build
   '*':
     #- elrepo
     #- kernel-lt
@@ -24,7 +24,7 @@ base:
     - match: pillar
     - nomad
     - docker
-    - rbd-docker-plugin.install
+    #- rbd-docker-plugin.install
   'role:bind':
     - match: pillar
     - bind

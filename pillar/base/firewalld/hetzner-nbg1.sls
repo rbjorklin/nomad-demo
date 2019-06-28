@@ -9,6 +9,7 @@ firewalld:
         - nomad
         - vault
         - salt
+        - dns
       sources:
         # https://ipinfo.io/AS24940#ipv4-data
         - source: 116.203.0.0/16

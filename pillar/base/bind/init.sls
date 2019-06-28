@@ -3,10 +3,11 @@
 bind:
   config:
     options:
-      allow-recursion: '{ any; }' # Never include this on a public resolver
-      listen-on: 'port 53 { 10.10.10.10; }'
+      allow-recursion: '{ localnets; localhost; }'
+      allow-query-cache: '{ localnets; localhost; }'
+      listen-on: 'port 53 { 0.0.0.0; }'
       listen-on-v6: 'port 53 { ::1; }'
-      allow-query: '{ localhost; 10.10.10.0/24; }'
+      allow-query: '{ any }'
       recursion: 'yes'
       dnssec-enable: 'no'
       dnssec-validation: 'no'
@@ -16,25 +17,24 @@ bind:
       forward: only
       forwarders:
         - 127.0.0.1 port 8600
-    vagrant.rbjorklin.com:
+    rbjorklin.com:
       type: master
       notify: False
   available_zones:
-    vagrant.rbjorklin.com:
-      file: vagrant.rbjorklin.com.txt
+    rbjorklin.com:
+      file: rbjorklin.com.txt
       soa:
-        ns: salt.vagrant.rbjorklin.com
+        ns: salt.rbjorklin.com
         contact: rbjorklin@example.com
-        #serial: {{ salt['cmd.run']('date +%s') }}
         serial: auto
-      records:                                    # Records for the zone, grouped by type
+      records: # Records for the zone, grouped by type
         A:
-          salt: 10.10.10.10
-          node01: 10.10.10.11
-          node02: 10.10.10.12
+          {% for node, addrs in salt.saltutil.runner('mine.get', tgt='*', fun='network.ip_addrs') | dictsort() %}
+          {{ node.split('.')[0] }}: {{ addrs[0] }}
+          {% endfor %}
         NS:
           '@':
-            - salt
+            - node01
         CNAME:
           haproxy: haproxy.service.consul.
           consul-ui: haproxy.service.consul.

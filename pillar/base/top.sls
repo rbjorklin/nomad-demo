@@ -11,7 +11,6 @@ base:
     - role.consul
     - role.nomad
     - role.haproxy
-    #- role.bind
     #- role.ceph
     #- role.vault
     # end roles
@@ -23,9 +22,11 @@ base:
     - consul.template
     - consul.template.haproxy
     - consul.service.haproxy
-    - bind
     - ceph
     - vault
+  node02.rbjorklin.com:
+    - role.bind
+    - bind
   node0[23].rbjorklin.com:
     - role.consul
     - role.nomad
