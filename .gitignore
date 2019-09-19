@@ -1,2 +1,11 @@
 .vagrant
 *.vdi
+
+# Ansible facts cache
+.facts_cache/
+
+nomad-jobs/*
+
+# Terraform
+.terraform
+terraform.tfstate*

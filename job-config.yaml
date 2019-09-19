@@ -1,0 +1,71 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=yaml:
+
+datacenter: nbg1
+domain: rbjorklin.com
+
+gelf_address: "udp://graylog.rbjorklin.com:12201"
+
+haproxy_bootstrap_conf: |
+  global
+      log         stdout local2
+      maxconn     4000
+  
+      # utilize system-wide crypto-policies
+      ssl-default-bind-ciphers PROFILE=SYSTEM
+      ssl-default-server-ciphers PROFILE=SYSTEM
+  
+  defaults
+      mode                    http
+      log                     global
+      option                  httplog
+      option                  dontlognull
+      option http-server-close
+      option forwardfor       except 127.0.0.0/8
+      option                  redispatch
+      retries                 3
+      timeout http-request    10s
+      timeout queue           1m
+      timeout connect         10s
+      timeout client          1m
+      timeout server          1m
+      timeout http-keep-alive 10s
+      timeout check           10s
+      maxconn                 3000
+  
+  resolvers consul
+    nameserver localhost 127.0.0.1:8600
+  
+  frontend main
+      bind *:80
+      monitor-uri /haproxy/status
+      # Don't expose stats outside of demo purposes...
+      stats enable
+      stats show-node
+      stats uri /haproxy/stats
+  
+  {{- range services }}
+  {{- if .Tags | contains "http" }}
+      use_backend {{ .Name }} if { hdr_beg(Host) -i {{ .Name }} }
+  {{- end }}
+  {{- end }}
+      default_backend     http_nomatch
+  
+  backend http_nomatch
+      mode http
+      http-request deny deny_status 400
+  
+  {{- range services }}
+  {{- if .Tags | contains "http" }}
+  backend {{ .Name }}
+  {{- if .Tags | contains "sticky" }}
+      balance url_param session check_post
+      hash-type consistent
+      hash-balance-factor 150
+  {{- end }}
+      {{- range service .Name }}
+      {{- if .Tags | contains "http" }}
+      server  {{ .Node }} {{ .Address }}:{{ .Port }} resolvers consul
+      {{- end }}
+      {{- end }}
+  {{- end }}
+  {{ end }}

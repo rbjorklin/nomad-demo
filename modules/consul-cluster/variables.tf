@@ -15,7 +15,7 @@ variable "labels" {
 # Optionals
 
 variable "image" {
-  default = "fedora-29"
+  default = "fedora-30"
 }
 
 variable "server_type" {

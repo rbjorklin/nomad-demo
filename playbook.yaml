@@ -1,0 +1,41 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=yaml:
+
+- hosts: all
+  vars_files:
+    - vars/main.yaml
+      #@roles:
+      #@  - consul
+  tasks:
+    - name: consul
+      include_role:
+        name: consul
+  tags:
+    - consul
+
+- hosts: all
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: vault
+      include_role:
+        name: vault
+  tags:
+    - vault
+
+- hosts: all
+  tasks:
+    - name: docker
+      include_role:
+        name: docker
+  tags:
+    - docker
+
+- hosts: all
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: nomad
+      include_role:
+        name: nomad
+  tags:
+    - nomad

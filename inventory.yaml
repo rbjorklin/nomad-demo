@@ -1,0 +1,29 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=yaml:
+
+all:
+  hosts: &all_hosts
+    nbg11:
+      ansible_host: 116.203.205.199
+      consul_iface: eth0
+      consul_node_role: server
+      consul_bootstrap_expect: true
+      nomad_node_role: both
+    nbg12:
+      ansible_host: 116.203.32.52
+      consul_iface: eth0
+      consul_node_role: server
+      consul_bootstrap_expect: true
+      nomad_node_role: both
+    nbg13:
+      ansible_host: 116.203.29.238
+      consul_iface: eth0
+      consul_node_role: server
+      consul_bootstrap_expect: true
+      nomad_node_role: both
+  children:
+    consul_instances:
+      hosts: *all_hosts
+    nomad_instances:
+      hosts: *all_hosts
+    vault_instances:
+      hosts: *all_hosts
