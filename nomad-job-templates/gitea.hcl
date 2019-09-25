@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "gitea" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -24,7 +25,9 @@ job "gitea" {
       mode = "fail"
     }
     ephemeral_disk {
-      size = 300
+      size    = "1000"
+      sticky  = true
+      migrate = true
     }
     task "gitea" {
       driver = "docker"
@@ -59,7 +62,7 @@ job "gitea" {
       }
       service {
         name = "gitea"
-        tags = ["nomad", "global", "gitea", "http"]
+        tags = ["nomad", "global", "gitea", "http", "expose"]
         port = "http"
         check {
           name     = "alive"
@@ -69,7 +72,7 @@ job "gitea" {
         }
       }
     }
-    task "gitea_postgres" {
+    task "postgres" {
       driver = "docker"
       env {
         POSTGRES_DB = "gitea"

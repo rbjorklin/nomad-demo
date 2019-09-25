@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "nexus" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -23,6 +24,11 @@ job "nexus" {
       delay = "30s"
       mode = "fail"
     }
+    ephemeral_disk {
+      size    = "5000"
+      sticky  = true
+      migrate = true
+    }
     task "nexus" {
       driver = "docker"
       config {
@@ -37,13 +43,9 @@ job "nexus" {
               source = "nexus-data"
             }
         ]
-        logging {
-          type = "gelf"
-          config {
-            gelf-address = "udp://graylog.rbjorklin.com:12201"
-            labels = "testXlabel"
-          }
-        }
+        {{- if (ds "config").logging_enabled }}
+{{ strings.Indent 8 (ds "config").logging_config }}
+	{{- end }}
       }
       resources {
         cpu    = 1500
@@ -54,7 +56,7 @@ job "nexus" {
       }
       service {
         name = "nexus"
-        tags = ["nomad", "global", "nexus", "http"]
+        tags = ["nomad", "global", "nexus", "http", "expose", "healthMode=http", "healthMethod=GET", "healthPath=/service/rest/v1/status"]
         port = "http"
         check {
           name     = "alive"

@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "opendj" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -18,40 +19,48 @@ job "opendj" {
   group "opendj" {
     count = 1
     restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
+      attempts = 3
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     ephemeral_disk {
-      size = 101
+      size    = "6000"
+      sticky  = true
+      migrate = true
     }
-    task "opendj" {
+    task "server" {
       driver = "docker"
+      env {
+        BASE_DN = "dc=rbjorklin,dc=com"
+        ROOT_USER_DN = "cn=admin"
+      }
       config {
-        image = "openidentityplatform/opendj:4.3.1"
+        hostname = "opendj.rbjorklin.com"
+        image = "openidentityplatform/opendj:4.4.3"
         port_map {
           ldap = 1389
           ldaps = 1636
-          other = 4444
+          replication = 4444
         }
       }
       resources {
-        cpu    = 500 # 500 MHz
-        memory = 384
+        cpu    = 500
+        memory = 1024
         network {
-          mbits = 10
           port "ldap" {}
+          port "ldaps" {}
+          port "replication" {}
         }
       }
       service {
         name = "opendj"
-        tags = ["nomad", "global", "opendj"]
+        tags = ["nomad", "global", "opendj", "ldap", "expose"]
         port = "ldap"
         check {
           name     = "alive"
           type     = "tcp"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }

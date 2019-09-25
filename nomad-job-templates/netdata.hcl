@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "netdata" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "system"
@@ -12,18 +13,16 @@ job "netdata" {
   group "netdata" {
     count = 1
     restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
+      attempts = 3
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     task "netdata" {
       driver = "docker"
       config {
         image = "netdata/netdata:latest"
-        port_map {
-          http = 19999
-        }
+        network_mode = "host"
         mounts = [
             {
                 type = "bind"
@@ -48,14 +47,16 @@ job "netdata" {
             "SYS_PTRACE",
         ]
         security_opt = [
-            "seccomp=apparmor",
+            "seccomp=unconfined",
         ]
       }
       resources {
         cpu    = 500
         memory = 100
         network {
-          port "http" {}
+          port "http" {
+            static = 19999
+          }
         }
       }
       service {

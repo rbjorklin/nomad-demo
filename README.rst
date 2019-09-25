@@ -13,27 +13,25 @@ Components used
 ===============
 
 * Vagrant_ - Repeatable automated development environments
-* Saltstack_ - Automation & orchestration
+* Ansible_ - Automation & orchestration
 * Consul_ - Service mesh to discover & connect services
 * Nomad_ - Application scheduler
-* Ceph_ - Storage solution for objects, block & filesystems
-* Bind_ - Old school DNS server
+* Vault_ - Secrets management
 
-Test drive the whole thing
-==========================
+Quickstart
+==========
 
-This will setup everything locally with Vagrant
+See `Makefile<Makefile>`_ for some available actions.
+
+Setup in Hetzner's Cloud
 ::
 
   git clone --recurse-submodules <repo url>
-  ./setup.sh
-
-Or you could setup the whole thing in Hetzner's Cloud
-::
-
   export TF_VAR_ssh_key="<insert name of hetzner ssh key here>"
   export TF_VAR_hcloud_token="<insert hcloud token here>"
-  git clone --recurse-submodules <repo url>
+  export TF_VAR_aws_r53_zone_id="<insert zone_id>"
+  export AWS_ACCESS_KEY_ID="<access key>"
+  export AWS_SECRET_ACCESS_KEY="<secret key>"
   terraform apply
 
 
@@ -45,8 +43,7 @@ You can find out what your VMs were created with by running:
 and then update the ``$storage_controller`` field in ``config.rb``
 
 .. _Vagrant: https://www.vagrantup.com/
-.. _Saltstack: https://www.saltstack.com/
+.. _Ansible: https://www.ansible.com/
 .. _Consul: https://www.consul.io/
 .. _Nomad: https://www.nomadproject.io/
-.. _Ceph: https://ceph.com/
-.. _Bind: https://www.isc.org/downloads/bind/
+.. _Vault: https://www.vaultproject.io/

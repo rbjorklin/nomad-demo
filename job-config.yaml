@@ -3,69 +3,160 @@
 datacenter: nbg1
 domain: rbjorklin.com
 
-gelf_address: "udp://graylog.rbjorklin.com:12201"
+logging_enabled: false
+logging_config: |
+  logging {
+    type = "gelf"
+    config {
+      gelf-address = "udp://graylog.rbjorklin.com:12201"
+      labels = "testXlabel"
+    }
+  }
 
 haproxy_bootstrap_conf: |
   global
-      log         stdout local2
-      maxconn     4000
-  
-      # utilize system-wide crypto-policies
-      ssl-default-bind-ciphers PROFILE=SYSTEM
-      ssl-default-server-ciphers PROFILE=SYSTEM
-  
+    log         stdout daemon
+    maxconn     4000
+
+    # utilize system-wide crypto-policies
+    #ssl-default-bind-ciphers PROFILE=SYSTEM
+    #ssl-default-server-ciphers PROFILE=SYSTEM
+    ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11 no-tlsv12 no-tls-tickets
+
+    ssl-default-server-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+    ssl-default-server-options no-sslv3 no-tlsv10 no-tlsv11 no-tlsv12 no-tls-tickets
+
   defaults
-      mode                    http
-      log                     global
-      option                  httplog
-      option                  dontlognull
-      option http-server-close
-      option forwardfor       except 127.0.0.0/8
-      option                  redispatch
-      retries                 3
-      timeout http-request    10s
-      timeout queue           1m
-      timeout connect         10s
-      timeout client          1m
-      timeout server          1m
-      timeout http-keep-alive 10s
-      timeout check           10s
-      maxconn                 3000
-  
-  resolvers consul
-    nameserver localhost 127.0.0.1:8600
-  
-  frontend main
-      bind *:80
-      monitor-uri /haproxy/status
-      # Don't expose stats outside of demo purposes...
-      stats enable
-      stats show-node
-      stats uri /haproxy/stats
-  
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    10s
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          1m
+    timeout server          1m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 3000
+
+  frontend ldap
+    mode tcp
+    bind *:389
+
+    {{- $requiredTcpTags := parseJSON "[\"ldap\",\"expose\"]" }}
+    {{- range services }}
+    {{- if .Tags | containsAll $requiredTcpTags }}
+    use_backend {{ .Name }}_tcp
+    {{- end }}
+    {{- end }}
+
+  frontend https
+    mode tcp
+    bind *:443 #ssl crt /local/freeipa.crt
+    {{- $requiredHttpsTags := parseJSON "[\"https\",\"expose\"]" }}
+    {{- range services }}
+    {{- if .Tags | containsAll $requiredHttpsTags }}
+    use_backend {{ .Name }}_https if { hdr_beg(Host) -i {{ .Name }} }
+    {{- end }}
+    {{- end }}
+    default_backend     freeipa_tcp
+
+  frontend http
+    bind *:80
+    monitor-uri /haproxy/status
+    # Don't expose stats outside of demo purposes...
+    stats enable
+    stats show-node
+    stats show-desc Allocation ID: {{ env "NOMAD_ALLOC_ID" }}
+    stats uri /haproxy/stats
+    stats auth {{ env "STATS_USER" }}:{{ env "STATS_PASSWD" }}
+
+    use_backend consul_ui_http if { hdr_beg(Host) -i consul-ui }
+
+    {{- $requiredHttpTags := parseJSON "[\"http\",\"expose\"]" }}
+    {{- range services }}
+    {{- if .Tags | containsAll $requiredHttpTags }}
+    use_backend {{ .Name }}_http if { hdr_beg(Host) -i {{ .Name }} }
+    {{- end }}
+    {{- end }}
+
+    default_backend     nomatch_http
+
+  backend nomatch_http
+    mode http
+    http-request deny deny_status 400
+
+  backend consul_ui_http
+    server  localhost 127.0.0.1:8500 check inter 5000
+
+  {{- $method := "" }}
+  {{- $path := "" }}
   {{- range services }}
-  {{- if .Tags | contains "http" }}
-      use_backend {{ .Name }} if { hdr_beg(Host) -i {{ .Name }} }
-  {{- end }}
-  {{- end }}
-      default_backend     http_nomatch
-  
-  backend http_nomatch
-      mode http
-      http-request deny deny_status 400
-  
-  {{- range services }}
-  {{- if .Tags | contains "http" }}
-  backend {{ .Name }}
+  {{- if .Tags | containsAll $requiredHttpTags }}
+  backend {{ .Name }}_http
   {{- if .Tags | contains "sticky" }}
-      balance url_param session check_post
-      hash-type consistent
-      hash-balance-factor 150
+    balance url_param session check_post
+    hash-type consistent
+    hash-balance-factor 150
   {{- end }}
-      {{- range service .Name }}
-      {{- if .Tags | contains "http" }}
-      server  {{ .Node }} {{ .Address }}:{{ .Port }} resolvers consul
-      {{- end }}
-      {{- end }}
+  {{- if .Tags | contains "healthMode=http" }}
+  {{- range $tag := .Tags }}
+  {{- if $tag | regexMatch "^healthMethod=.*$" }}
+  {{- range $index, $element := ($tag | split "=") }}
+  {{- if eq $index 1 }}
+  {{- $method = $element }}
   {{- end }}
-  {{ end }}
+  {{- end }}
+  {{- end }}
+  {{- if $tag | regexMatch "^healthPath=.*$" }}
+  {{- range $index, $element := ($tag | split "=") }}
+  {{- if eq $index 1 }}
+  {{- $path = $element }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+    option httpchk {{ $method }} {{ $path }}
+  {{- end }}
+    {{- range service .Name }}
+    server  {{ .Node }} {{ .Address }}:{{ .Port }} check inter 5000
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+  {{- range services }}
+  {{- if .Tags | containsAll $requiredHttpsTags }}
+  backend {{ .Name }}_https
+  {{- if .Tags | contains "sticky" }}
+    balance url_param session check_post
+    hash-type consistent
+    hash-balance-factor 150
+  {{- end }}
+    {{- range service .Name }}
+    server  {{ .Node }} {{ .Address }}:{{ .Port }} check inter 5000
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+  {{- range services }}
+  {{- if .Tags | containsAll $requiredTcpTags }}
+  backend {{ .Name }}_tcp
+    mode tcp
+  {{- if .Tags | contains "sticky" }}
+    balance source
+  {{- end }}
+    {{- range service .Name }}
+    server  {{ .Node }} {{ .Address }}:{{ .Port }} check inter 5000
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+  backend freeipa_tcp
+    server  nbg12 116.203.201.210:26537 check inter 5000
+

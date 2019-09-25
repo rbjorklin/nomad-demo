@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "prometheus" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -19,12 +20,14 @@ job "prometheus" {
     count = 1
     restart {
       attempts = 3
-      interval = "50m"
-      delay = "15s"
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     ephemeral_disk {
-      size = 300
+      size    = "4000"
+      sticky  = true
+      migrate = true
     }
     task "prometheus" {
       driver = "docker"
@@ -50,7 +53,7 @@ job "prometheus" {
       }
       service {
         name = "prometheus"
-        tags = ["nomad", "global", "prometheus", "http"]
+        tags = ["nomad", "global", "prometheus", "http", "expose"]
         port = "http"
         check {
           name     = "alive"
@@ -83,8 +86,8 @@ job "prometheus" {
         }
       }
       service {
-        name = "grafana"
-        tags = ["nomad", "global", "alertmanager", "http"]
+        name = "alertmanager"
+        tags = ["nomad", "global", "alertmanager", "http", "expose"]
         port = "http"
         check {
           name     = "alive"
@@ -111,7 +114,7 @@ job "prometheus" {
       }
       service {
         name = "grafana"
-        tags = ["nomad", "global", "grafana", "http"]
+        tags = ["nomad", "global", "grafana", "http", "expose"]
         port = "http"
         check {
           name     = "alive"

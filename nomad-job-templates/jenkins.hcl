@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "jenkins" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -18,9 +19,9 @@ job "jenkins" {
   group "jenkins" {
     count = 1
     restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
+      attempts = 3
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     ephemeral_disk {
@@ -43,7 +44,6 @@ job "jenkins" {
         cpu    = 500 # 500 MHz
         memory = 512
         network {
-          mbits = 10
           port "http" {}
         }
       }
@@ -54,7 +54,7 @@ job "jenkins" {
         check {
           name     = "alive"
           type     = "tcp"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }

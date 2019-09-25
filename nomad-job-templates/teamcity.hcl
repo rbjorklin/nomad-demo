@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "teamcity" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -19,21 +20,24 @@ job "teamcity" {
     min_healthy_time = "10s"
     healthy_deadline = "5m"
   }
-  group "teamcity-server" {
+  group "server" {
     count = 1
     restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
+      attempts = 3
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     ephemeral_disk {
-      size = 300
+      size    = "4000"
+      sticky  = true
+      migrate = true
     }
-    task "teamcity_server" {
+    task "server" {
       driver = "docker"
       env {
-        TEAMCITY_SERVER_MEM_OPTS = "-Xmx1800m"
+        # https://confluence.jetbrains.com/pages/viewpage.action?pageId=113084582#HowTo...-hardwarerequirements
+        TEAMCITY_SERVER_MEM_OPTS = "-Xmx1100m"
       }
       config {
         image = "jetbrains/teamcity-server:latest"
@@ -48,54 +52,54 @@ job "teamcity" {
       }
       resources {
         cpu    = 2000
-        memory = 2048
+        memory = 1220
         network {
-          mbits = 1000
           port "http" {}
         }
       }
       service {
-        name = "teamcity-server"
-        tags = ["nomad", "global", "teamcity", "http", "server"]
+        name = "teamcity"
+        tags = ["nomad", "global", "teamcity", "http", "server", "expose"]
         port = "http"
         check {
           name     = "alive"
           type     = "tcp"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }
     }
   }
-  group "teamcity-agent" {
+  group "agent" {
     count = 2
     restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
+      attempts = 3
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
-    ephemeral_disk {
-      size = 300
-    }
-    task "teamcity_agent" {
+    task "agent" {
       driver = "docker"
       env {
-        SERVER_URL = "http://teamcity-server.service.consul:${NOMAD_PORT_teamcity_server_http}"
+        SERVER_URL = "http://teamcity.service.consul:${NOMAD_PORT_teamcity_server_http}"
       }
       config {
         image = "jetbrains/teamcity-agent:latest"
+        port_map {
+          agent = 9090
+        }
       }
       resources {
-        cpu    = 500 # 500 MHz
+        cpu    = 500
         memory = 200
         network {
-          mbits = 10
+          port "agent" {}
         }
       }
       service {
         name = "teamcity-agent"
-        tags = ["nomad", "global", "teamcity", "http", "agent"]
+        tags = ["nomad", "global", "teamcity", "agent"]
+        port = "agent"
       }
     }
   }

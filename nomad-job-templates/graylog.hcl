@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "graylog" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -18,13 +19,15 @@ job "graylog" {
   group "graylog" {
     count = 1
     restart {
-      attempts = 2
-      interval = "30m"
-      delay = "15s"
+      attempts = 3
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     ephemeral_disk {
-      size = 300
+      size    = "2000"
+      sticky  = true
+      migrate = true
     }
     task "graylog" {
       driver = "docker"
@@ -34,9 +37,9 @@ job "graylog" {
         # Password: admin
         GRAYLOG_ROOT_PASSWORD_SHA2 = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
         GRAYLOG_HTTP_BIND_ADDRESS = "0.0.0.0"
-        GRAYLOG_HTTP_EXTERNAL_URI = "http://graylog.test:${NOMAD_PORT_http}/"
-        GRAYLOG_MONGODB_URI = "mongodb://${NOMAD_ADDR_graylog_mongodb_mongo}/graylog"
-        GRAYLOG_ELASTICSEARCH_HOSTS = "http://${NOMAD_ADDR_graylog_elastic_elastic_rest}"
+        GRAYLOG_HTTP_EXTERNAL_URI = "http://graylog.rbjorklin.com:${NOMAD_PORT_http}/"
+        GRAYLOG_MONGODB_URI = "mongodb://${NOMAD_ADDR_mongodb_mongo}/graylog"
+        GRAYLOG_ELASTICSEARCH_HOSTS = "http://${NOMAD_ADDR_elastic_http}"
       }
       config {
         image = "graylog/graylog:3.1"
@@ -57,17 +60,17 @@ job "graylog" {
       }
       service {
         name = "graylog"
-        tags = ["nomad", "global", "graylog", "http"]
+        tags = ["nomad", "global", "graylog", "http", "expose"]
         port = "http"
         check {
           name     = "alive"
           type     = "tcp"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }
     }
-    task "graylog_mongodb" {
+    task "mongodb" {
       driver = "docker"
       config {
         image = "mongo:4.0"
@@ -83,7 +86,7 @@ job "graylog" {
         }
       }
       service {
-        name = "graylog-mongo"
+        name = "mongo"
         tags = ["nomad", "global", "graylog", "mongo"]
         port = "mongo"
         check {
@@ -94,7 +97,7 @@ job "graylog" {
         }
       }
     }
-    task "graylog_elastic" {
+    task "elastic" {
       driver = "docker"
       env {
         http.host = "0.0.0.0"
@@ -106,22 +109,22 @@ job "graylog" {
       config {
         image = "elasticsearch:6.8.3"
         port_map {
-          elastic_rest = 9200
-          elastic_comm = 9300
+          http = 9200
+          replication = 9300
         }
       }
       resources {
         cpu    = 1000
         memory = 1024
         network {
-          port "elastic_rest" {}
-          port "elastic_comm" {}
+          port "http" {}
+          port "replication" {}
         }
       }
       service {
-        name = "graylog-elastic"
-        tags = ["nomad", "global", "graylog", "elastic"]
-        port = "elastic_rest"
+        name = "elastic"
+        tags = ["nomad", "global", "graylog", "elastic", "http"]
+        port = "http"
         check {
           name     = "alive"
           type     = "tcp"

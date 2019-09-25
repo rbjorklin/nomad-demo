@@ -1,12 +1,15 @@
 # vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=yaml:
 
-nomad_datacenter: nbg1
 consul_datacenter: nbg1
-vault_datacenter: nbg1
-
 consul_acl_datacenter: nbg1
+#consul_autopilot_enable: true # look into enabling this
+
+vault_datacenter: nbg1
 vault_cluster_name: nbg1
 
+nomad_datacenter: nbg1
+nomad_use_consul: true
+#nomad_vault_enabled: true # use this at somepoint
 nomad_advertise_address: "{{ ansible_default_ipv4.address }}"
 #nomad_node_role: both # see inventory
 

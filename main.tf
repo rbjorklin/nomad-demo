@@ -11,6 +11,15 @@ module "hcloud-consul-cluster" {
   amount       = 3
   domain       = "rbjorklin.com"
   #location     = "fsn1"
-  image        = "fedora-30"
-  server_type  = "ccx21" # ccx21 requires a higher vCPU limit with Hetzner, try ccx11 if it fails
+  image       = "fedora-30"
+  server_type = "ccx21" # ccx21 requires a higher vCPU limit with Hetzner, try ccx11 if it fails
+}
+
+module "r53-dns-records" {
+  source = "./modules/route53"
+
+  #amount        = length(module.hcloud-consul-cluster.hosts_and_ips)
+  hosts_and_ips   = module.hcloud-consul-cluster.hosts_and_ips
+  domain          = "rbjorklin.com."
+  aws_r53_zone_id = var.aws_r53_zone_id
 }

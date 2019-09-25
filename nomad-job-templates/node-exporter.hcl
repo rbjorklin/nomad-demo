@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "node_exporter" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "system"
@@ -13,8 +14,8 @@ job "node_exporter" {
     count = 1
     restart {
       attempts = 3
-      interval = "5m"
-      delay = "15s"
+      interval = "2m"
+      delay = "30s"
       mode = "fail"
     }
     task "node_exporter" {
@@ -33,7 +34,9 @@ job "node_exporter" {
         cpu    = 500
         memory = 100
         network {
-          port "http" {}
+          port "http" {
+            static = 9100
+          }
         }
       }
       service {

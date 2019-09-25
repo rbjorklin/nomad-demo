@@ -1,3 +1,4 @@
+# vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=hcl:
 job "haproxy" {
   datacenters = ["{{ (datasource "config").datacenter }}"]
   type = "service"
@@ -22,26 +23,29 @@ job "haproxy" {
   group "haproxy" {
     count = 3
     restart {
-      attempts = 2
+      attempts = 3
       interval = "2m"
-      delay = "15s"
+      delay = "30s"
       mode = "fail"
     }
     task "haproxy" {
+      env {
+        STATS_USER = "haproxy"
+        STATS_PASSWD = "haproxy"
+      }
       template {
         destination   = "local/haproxy.conf"
         change_mode   = "signal"
         change_signal = "SIGUSR2"
+        splay = "60s"
         data = <<EOH
-{{ (datasource "config").haproxy_bootstrap_conf -}}
+{{ (ds "config").haproxy_bootstrap_conf -}}
 EOH
       }
       driver = "docker"
       config {
         image = "haproxy:alpine"
         args = [
-          "-W",
-          "-db",
           "-f",
           "/local/haproxy.conf",
         ]
@@ -57,14 +61,29 @@ EOH
           port "https" {
             static = 443
           }
+          port "ldap" {
+            static = 389
+          }
         }
       }
       service {
         name = "haproxy"
-        tags = ["nomad", "global", "haproxy", "http", "https"]
+        tags = ["nomad", "global", "haproxy", "http"]
         port = "http"
         check {
-          name     = "alive"
+          name     = "http"
+          type     = "http"
+          path     = "/haproxy/status"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+      service {
+        name = "haproxy"
+        tags = ["nomad", "global", "haproxy", "https"]
+        port = "https"
+        check {
+          name     = "https"
           type     = "tcp"
           interval = "10s"
           timeout  = "2s"
