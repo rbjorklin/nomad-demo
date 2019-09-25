@@ -21,7 +21,7 @@ Components used
 Quickstart
 ==========
 
-See `Makefile<Makefile>`_ for some available actions.
+See Makefile_ for some available actions.
 
 Setup in Hetzner's Cloud
 ::
@@ -47,3 +47,4 @@ and then update the ``$storage_controller`` field in ``config.rb``
 .. _Consul: https://www.consul.io/
 .. _Nomad: https://www.nomadproject.io/
 .. _Vault: https://www.vaultproject.io/
+.. _Makefile: Makefile
