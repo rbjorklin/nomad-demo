@@ -59,7 +59,7 @@ job "teamcity" {
       }
       service {
         name = "teamcity"
-        tags = ["nomad", "global", "teamcity", "http", "server", "expose"]
+        tags = ["nomad", "global", "teamcity", "http", "server", "expose", "healthMode=http", "healthMethod=GET", "healthPath=/login.html"]
         port = "http"
         check {
           name     = "alive"
@@ -80,8 +80,13 @@ job "teamcity" {
     }
     task "agent" {
       driver = "docker"
-      env {
-        SERVER_URL = "http://teamcity.service.consul:${NOMAD_PORT_teamcity_server_http}"
+      template {
+        # https://www.nomadproject.io/docs/runtime/environment.html#task-directories
+        destination = "secrets/file.env"
+        env = true
+        data = <<EOH
+{{ "SERVER_URL=http://{{ range service \"teamcity|any\" }}{{ .Address }}:{{ .Port }}{{ end }}" }}
+EOH
       }
       config {
         image = "jetbrains/teamcity-agent:latest"
