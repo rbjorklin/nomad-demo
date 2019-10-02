@@ -108,18 +108,10 @@ haproxy_bootstrap_conf: |
   {{- if .Tags | contains "healthMode=http" }}
   {{- range $tag := .Tags }}
   {{- if $tag | regexMatch "^healthMethod=.*$" }}
-  {{- range $index, $element := ($tag | split "=") }}
-  {{- if eq $index 1 }}
-  {{- $method = $element }}
-  {{- end }}
-  {{- end }}
+  {{- $method = (index ($tag | split "=") 1) }}
   {{- end }}
   {{- if $tag | regexMatch "^healthPath=.*$" }}
-  {{- range $index, $element := ($tag | split "=") }}
-  {{- if eq $index 1 }}
-  {{- $path = $element }}
-  {{- end }}
-  {{- end }}
+  {{- $path = (index ($tag | split "=") 1) }}
   {{- end }}
   {{- end }}
     option httpchk {{ $method }} {{ $path }}
