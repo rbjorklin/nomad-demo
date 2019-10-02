@@ -74,7 +74,7 @@ EOH
           name     = "http"
           type     = "http"
           path     = "/haproxy/status"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }
@@ -85,7 +85,7 @@ EOH
         check {
           name     = "https"
           type     = "tcp"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }

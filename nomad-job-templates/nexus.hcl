@@ -60,8 +60,9 @@ job "nexus" {
         port = "http"
         check {
           name     = "alive"
-          type     = "tcp"
-          interval = "10s"
+          type     = "http"
+          path     = "/service/rest/v1/status"
+          interval = "30s"
           timeout  = "2s"
         }
       }

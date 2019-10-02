@@ -60,11 +60,13 @@ job "graylog" {
       }
       service {
         name = "graylog"
-        tags = ["nomad", "global", "graylog", "http", "expose"]
+        tags = ["nomad", "global", "graylog", "http", "expose", "healthMode=http", "healthMethod=HEAD", "healthPath=/api/system/lbstatus"]
         port = "http"
         check {
           name     = "alive"
-          type     = "tcp"
+          type     = "http"
+          method   = "HEAD"
+          path     = "/api/system/lbstatus"
           interval = "30s"
           timeout  = "2s"
         }
@@ -92,7 +94,7 @@ job "graylog" {
         check {
           name     = "alive"
           type     = "tcp"
-          interval = "10s"
+          interval = "30s"
           timeout  = "2s"
         }
       }
@@ -123,12 +125,13 @@ job "graylog" {
       }
       service {
         name = "elastic"
-        tags = ["nomad", "global", "graylog", "elastic", "http"]
+        tags = ["nomad", "global", "graylog", "elastic", "http", "healthMode=http", "healthMethod=GET", "healthPath=/_cluster/health"]
         port = "http"
         check {
           name     = "alive"
-          type     = "tcp"
-          interval = "10s"
+          type     = "http"
+          path     = "/_cluster/health"
+          interval = "30s"
           timeout  = "2s"
         }
       }

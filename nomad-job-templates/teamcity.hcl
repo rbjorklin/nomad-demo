@@ -9,7 +9,7 @@ job "teamcity" {
   update {
     max_parallel = 1
     min_healthy_time = "10s"
-    healthy_deadline = "3m"
+    healthy_deadline = "8m"
     progress_deadline = "10m"
     auto_revert = false
     canary = 0
@@ -18,7 +18,7 @@ job "teamcity" {
     max_parallel = 1
     health_check = "checks"
     min_healthy_time = "10s"
-    healthy_deadline = "5m"
+    healthy_deadline = "8m"
   }
   group "server" {
     count = 1
@@ -37,7 +37,7 @@ job "teamcity" {
       driver = "docker"
       env {
         # https://confluence.jetbrains.com/pages/viewpage.action?pageId=113084582#HowTo...-hardwarerequirements
-        TEAMCITY_SERVER_MEM_OPTS = "-Xmx1100m"
+        TEAMCITY_SERVER_MEM_OPTS = "-Xmx1300m"
       }
       config {
         image = "jetbrains/teamcity-server:latest"
@@ -52,14 +52,14 @@ job "teamcity" {
       }
       resources {
         cpu    = 2000
-        memory = 1220
+        memory = 1800
         network {
           port "http" {}
         }
       }
       service {
         name = "teamcity"
-        tags = ["nomad", "global", "teamcity", "http", "server", "expose", "healthMode=http", "healthMethod=GET", "healthPath=/login.html"]
+        tags = ["nomad", "global", "teamcity", "http", "server", "expose"]
         port = "http"
         check {
           name     = "alive"

@@ -53,12 +53,13 @@ job "prometheus" {
       }
       service {
         name = "prometheus"
-        tags = ["nomad", "global", "prometheus", "http", "expose"]
+        tags = ["nomad", "global", "prometheus", "http", "expose", "healthMode=http", "healthMethod=GET", "healthPath=/-/healthy"]
         port = "http"
         check {
           name     = "alive"
-          type     = "tcp"
-          interval = "10s"
+          type     = "http"
+          path     = "/-/healthy"
+          interval = "30s"
           timeout  = "2s"
         }
       }
@@ -87,12 +88,13 @@ job "prometheus" {
       }
       service {
         name = "alertmanager"
-        tags = ["nomad", "global", "alertmanager", "http", "expose"]
+        tags = ["nomad", "global", "alertmanager", "http", "expose", "healthMode=http", "healthMethod=GET", "healthPath=/-/healthy"]
         port = "http"
         check {
           name     = "alive"
-          type     = "tcp"
-          interval = "10s"
+          type     = "http"
+          path     = "/-/healthy"
+          interval = "30s"
           timeout  = "2s"
         }
       }
@@ -114,12 +116,13 @@ job "prometheus" {
       }
       service {
         name = "grafana"
-        tags = ["nomad", "global", "grafana", "http", "expose"]
+        tags = ["nomad", "global", "grafana", "http", "expose", "healthMode=http", "healthMethod=GET", "healthPath=/api/health"]
         port = "http"
         check {
           name     = "alive"
-          type     = "tcp"
-          interval = "10s"
+          type     = "http"
+          path     = "/api/health"
+          interval = "30s"
           timeout  = "2s"
         }
       }
