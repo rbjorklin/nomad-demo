@@ -37,7 +37,8 @@ job "teamcity" {
       driver = "docker"
       env {
         # https://confluence.jetbrains.com/pages/viewpage.action?pageId=113084582#HowTo...-hardwarerequirements
-        TEAMCITY_SERVER_MEM_OPTS = "-Xmx1300m"
+        TEAMCITY_SERVER_MEM_OPTS = "-Xmx1400m"
+        TEAMCITY_DATA_PATH = "/local/teamcity_server/datadir"
       }
       config {
         image = "jetbrains/teamcity-server:latest"
@@ -52,7 +53,7 @@ job "teamcity" {
       }
       resources {
         cpu    = 2000
-        memory = 1800
+        memory = 2000
         network {
           port "http" {}
         }
@@ -96,7 +97,7 @@ EOH
       }
       resources {
         cpu    = 500
-        memory = 200
+        memory = 500
         network {
           port "agent" {}
         }
