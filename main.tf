@@ -12,7 +12,7 @@ module "hcloud-consul-cluster" {
   domain       = "rbjorklin.com"
   #location     = "fsn1"
   image       = "fedora-30"
-  server_type = "ccx21" # ccx21 requires a higher vCPU limit with Hetzner, try ccx11 if it fails
+  server_type = "cx21" # ccx21 requires a higher vCPU limit with Hetzner, try ccx11 if it fails
 }
 
 module "r53-dns-records" {

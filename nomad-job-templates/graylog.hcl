@@ -50,8 +50,8 @@ job "graylog" {
         }
       }
       resources {
-        cpu    = 1000
-        memory = 1024
+        cpu    = 500
+        memory = 1000
         network {
           port "http" {}
           port "syslog" {}
@@ -81,8 +81,8 @@ job "graylog" {
         }
       }
       resources {
-        cpu    = 500 # 500 MHz
-        memory = 1024
+        cpu    = 500
+        memory = 200
         network {
           port "mongo" {}
         }
@@ -102,11 +102,22 @@ job "graylog" {
     task "elastic" {
       driver = "docker"
       env {
-        http.host = "0.0.0.0"
-        transport.host = "localhost"
-        network.host = "0.0.0.0"
-        discovery.type = "single-node"
+        ES_PATH_CONF = "/local/elasticsearch.yaml"
         ES_JAVA_OPTS = "-Xms512m -Xmx512m"
+      }
+      template {
+        destination   = "local/elasticsearch.yaml"
+        splay = "60s"
+        data = <<EOH
+cluster.name: graylog
+http.host = "0.0.0.0"
+network.host = "0.0.0.0"
+discovery.type = "single-node"
+transport.host = "localhost"
+path:
+  logs: /local/log/elasticsearch
+  data: /local/data/elasticsearch
+EOH
       }
       config {
         image = "elasticsearch:6.8.3"
@@ -116,8 +127,8 @@ job "graylog" {
         }
       }
       resources {
-        cpu    = 1000
-        memory = 1024
+        cpu    = 500
+        memory = 1000
         network {
           port "http" {}
           port "replication" {}

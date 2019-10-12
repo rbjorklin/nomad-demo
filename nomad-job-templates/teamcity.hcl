@@ -79,8 +79,14 @@ job "teamcity" {
       delay = "30s"
       mode = "fail"
     }
+    ephemeral_disk {
+      size    = "2000"
+    }
     task "agent" {
       driver = "docker"
+      env {
+        DOCKER_IN_DOCKER = "start"
+      }
       template {
         # https://www.nomadproject.io/docs/runtime/environment.html#task-directories
         destination = "secrets/file.env"
@@ -91,13 +97,14 @@ EOH
       }
       config {
         image = "jetbrains/teamcity-agent:latest"
+        privileged = true
         port_map {
           agent = 9090
         }
       }
       resources {
-        cpu    = 500
-        memory = 500
+        cpu    = 1200
+        memory = 1000
         network {
           port "agent" {}
         }

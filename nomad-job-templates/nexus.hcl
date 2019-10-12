@@ -29,27 +29,30 @@ job "nexus" {
       sticky  = true
       migrate = true
     }
+    volume "data" {
+      type      = "host"
+      source    = "nexus"
+      read_only = false
+    }
     task "nexus" {
       driver = "docker"
+      volume_mount {
+        volume      = "data"
+        destination = "/nexus-data"
+        read_only = false
+      }
       config {
         image = "sonatype/nexus3:latest"
         port_map {
           http = 8081
         }
-        mounts = [
-            {
-              type = "volume"
-              target = "/nexus-data"
-              source = "nexus-data"
-            }
-        ]
         {{- if (ds "config").logging_enabled }}
 {{ strings.Indent 8 (ds "config").logging_config }}
 	{{- end }}
       }
       resources {
-        cpu    = 1500
-        memory = 2048
+        cpu    = 500
+        memory = 1000
         network {
           port "http" {}
         }
