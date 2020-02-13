@@ -1,12 +1,15 @@
 [submodule "roles/nomad"]
 	path = roles/nomad
-	url = git@github.com:brianshumate/ansible-nomad.git
+	url = git@github.com:rbjorklin/ansible-nomad.git
+        branch = master
 [submodule "roles/vault"]
 	path = roles/vault
-	url = git@github.com:brianshumate/ansible-vault.git
+	url = git@github.com:rbjorklin/ansible-vault.git
+        branch = master
 [submodule "roles/consul"]
 	path = roles/consul
-	url = git@github.com:brianshumate/ansible-consul.git
+	url = git@github.com:rbjorklin/ansible-consul.git
+        branch = master
 [submodule "roles/docker"]
 	path = roles/docker
 	url = git@github.com:geerlingguy/ansible-role-docker.git
