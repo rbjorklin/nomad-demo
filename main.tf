@@ -11,7 +11,7 @@ module "hcloud-consul-cluster" {
   amount       = 3
   domain       = "rbjorklin.com"
   #location     = "fsn1"
-  image       = "fedora-30"
+  image       = "centos-8"
   server_type = "cx21" # ccx21 requires a higher vCPU limit with Hetzner, try ccx11 if it fails
 }
 

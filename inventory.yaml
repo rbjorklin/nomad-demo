@@ -2,20 +2,20 @@
 
 all:
   hosts: &all_hosts
-    nbg11:
-      ansible_host: nbg11.rbjorklin.com
+    nbg11.rbjorklin.com:
+      #ansible_host: nbg11.rbjorklin.com
       consul_iface: eth0
       consul_node_role: server
       consul_bootstrap_expect: true
       nomad_node_role: both
-    nbg12:
-      ansible_host: nbg12.rbjorklin.com
+    nbg12.rbjorklin.com:
+      #ansible_host: nbg12.rbjorklin.com
       consul_iface: eth0
       consul_node_role: server
       consul_bootstrap_expect: true
       nomad_node_role: both
-    nbg13:
-      ansible_host: nbg13.rbjorklin.com
+    nbg13.rbjorklin.com:
+      #ansible_host: nbg13.rbjorklin.com
       consul_iface: eth0
       consul_node_role: server
       consul_bootstrap_expect: true
