@@ -78,3 +78,35 @@ resource "aws_route53_record" "prometheus" {
   ttl     = "300"
   records = ["loadbalancer.${var.domain}"]
 }
+
+resource "aws_route53_record" "alertmanager" {
+  zone_id = var.aws_r53_zone_id
+  name    = "alertmanager"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["loadbalancer.${var.domain}"]
+}
+
+resource "aws_route53_record" "grafana" {
+  zone_id = var.aws_r53_zone_id
+  name    = "grafana"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["loadbalancer.${var.domain}"]
+}
+
+resource "aws_route53_record" "jenkins" {
+  zone_id = var.aws_r53_zone_id
+  name    = "jenkins"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["loadbalancer.${var.domain}"]
+}
+
+resource "aws_route53_record" "gitea" {
+  zone_id = var.aws_r53_zone_id
+  name    = "gitea"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["loadbalancer.${var.domain}"]
+}

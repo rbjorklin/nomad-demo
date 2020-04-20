@@ -45,17 +45,6 @@ haproxy_bootstrap_conf: |
     timeout check           10s
     maxconn                 3000
 
-  frontend ldap
-    mode tcp
-    bind *:389
-
-    {{- $requiredTcpTags := parseJSON "[\"ldap\",\"expose\"]" }}
-    {{- range services }}
-    {{- if .Tags | containsAll $requiredTcpTags }}
-    use_backend {{ .Name }}_tcp
-    {{- end }}
-    {{- end }}
-
   frontend https
     mode tcp
     bind *:443 #ssl crt /local/freeipa.crt
@@ -65,7 +54,7 @@ haproxy_bootstrap_conf: |
     use_backend {{ .Name }}_https if { hdr_beg(Host) -i {{ .Name }} }
     {{- end }}
     {{- end }}
-    default_backend     freeipa_tcp
+    #default_backend     nomatch_http
 
   frontend http
     bind *:80
@@ -76,66 +65,53 @@ haproxy_bootstrap_conf: |
     stats show-desc Allocation ID: {{ env "NOMAD_ALLOC_ID" }}
     stats uri /haproxy/stats
     stats auth {{ env "STATS_USER" }}:{{ env "STATS_PASSWD" }}
+    http-request use-service prometheus-exporter if { path /haproxy/metrics }
 
     use_backend consul_ui_http if { hdr_beg(Host) -i consul-ui }
 
-    {{- $requiredHttpTags := parseJSON "[\"http\",\"expose\"]" }}
+    {{- $hostHeaderBegin := "" }}
+    {{- $requiredHttpTags := parseJSON "[\"http\", \"consul-connect\"]" }}
     {{- range services }}
     {{- if .Tags | containsAll $requiredHttpTags }}
-    use_backend {{ .Name }}_http if { hdr_beg(Host) -i {{ .Name }} }
+      {{- range $tag := .Tags }}
+        {{- if $tag | regexMatch "^hostHeaderBegin=.*$" }}
+          {{- $hostHeaderBegin = (index ($tag | split "=") 1) }}
+        {{- end }}
+      {{- end }}
+    use_backend {{ .Name | replaceAll "-" "_" }}_http if { hdr_beg(Host) -i {{ $hostHeaderBegin }} }
     {{- end }}
     {{- end }}
 
-    default_backend     nomatch_http
-
-  backend nomatch_http
-    mode http
-    http-request deny deny_status 400
-
-  backend consul_ui_http
-    server  localhost 127.0.0.1:8500 check inter 5000
+    default_backend     envoy_proxy_http
 
   {{- $method := "" }}
   {{- $path := "" }}
   {{- range services }}
   {{- if .Tags | containsAll $requiredHttpTags }}
-  backend {{ .Name }}_http
-  {{- if .Tags | contains "sticky" }}
+  backend {{ .Name | replaceAll "-" "_" }}_http
+    {{- if .Tags | contains "sticky" }}
     balance url_param session check_post
     hash-type consistent
     hash-balance-factor 150
-  {{- end }}
+    {{- end }}
   {{- if .Tags | contains "healthMode=http" }}
-  {{- range $tag := .Tags }}
-  {{- if $tag | regexMatch "^healthMethod=.*$" }}
-  {{- $method = (index ($tag | split "=") 1) }}
-  {{- end }}
-  {{- if $tag | regexMatch "^healthPath=.*$" }}
-  {{- $path = (index ($tag | split "=") 1) }}
-  {{- end }}
-  {{- end }}
+    {{- range $tag := .Tags }}
+      {{- if $tag | regexMatch "^healthMethod=.*$" }}
+        {{- $method = (index ($tag | split "=") 1) }}
+      {{- end }}
+      {{- if $tag | regexMatch "^healthPath=.*$" }}
+        {{- $path = (index ($tag | split "=") 1) }}
+      {{- end }}
+    {{- end }}
     option httpchk {{ $method }} {{ $path }}
   {{- end }}
-    {{- range service .Name }}
-    server  {{ .Node }} {{ .Address }}:{{ .Port }} check inter 5000
-    {{- end }}
+  {{- range service .Name }}
+    server  {{ .Node }} ${NOMAD_UPSTREAM_ADDR_{{ .Name | replaceAll "-sidecar-proxy" "" }}} check inter 5000
   {{- end }}
-  {{- end }}
-
-  {{- range services }}
-  {{- if .Tags | containsAll $requiredHttpsTags }}
-  backend {{ .Name }}_https
-  {{- if .Tags | contains "sticky" }}
-    balance url_param session check_post
-    hash-type consistent
-    hash-balance-factor 150
-  {{- end }}
-    {{- range service .Name }}
-    server  {{ .Node }} {{ .Address }}:{{ .Port }} check inter 5000
-    {{- end }}
   {{- end }}
   {{- end }}
 
+  {{- $requiredTcpTags := parseJSON "[\"tcp\",\"expose\"]" }}
   {{- range services }}
   {{- if .Tags | containsAll $requiredTcpTags }}
   backend {{ .Name }}_tcp
@@ -149,6 +125,13 @@ haproxy_bootstrap_conf: |
   {{- end }}
   {{- end }}
 
-  backend freeipa_tcp
-    server  nbg12 116.203.201.210:26537 check inter 5000
+  backend nomatch_http
+    mode http
+    http-request deny deny_status 400
+
+  backend consul_ui_http
+    server  localhost 127.0.0.1:8500 check inter 5000
+
+  backend envoy_proxy_http
+    server  localhost 127.0.0.1:19000 check
 

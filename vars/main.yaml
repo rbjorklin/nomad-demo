@@ -2,6 +2,8 @@
 
 consul_config:
   datacenter: nbg1
+  connect:
+    enabled: true
 
 vault_datacenter: nbg1
 vault_cluster_name: nbg1
@@ -11,19 +13,23 @@ nomad_use_consul: true
 #nomad_vault_enabled: true # use this at somepoint
 nomad_advertise_address: "{{ ansible_default_ipv4.address }}"
 #nomad_node_role: both # see inventory
-nomad_version: 0.10.5
+nomad_version: 0.11.0-beta1
+
+nomad_env_vars:
+  # https://github.com/hashicorp/nomad/issues/7232#issuecomment-604449936
+  - "AWS_ENV_URL=http://0.0.0.0/"
 
 nomad_config:
   datacenter: nbg1
-  host_volume:
-    nexus:
-      path: /opt/nexus
-      read_only: false
-  client:
-    host_volume:
-      - nexus:
-        - path: /opt/nexus
-          read_only: false
+  #host_volume:
+  #  nexus:
+  #    path: /opt/nexus
+  #    read_only: false
+  #client:
+  #  host_volume:
+  #    - nexus:
+  #      - path: /opt/nexus
+  #        read_only: false
   plugin:
     - raw_exec:
       - config:

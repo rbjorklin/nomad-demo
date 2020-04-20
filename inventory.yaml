@@ -27,3 +27,5 @@ all:
       hosts: *all_hosts
     vault_instances:
       hosts: *all_hosts
+    consul_servers:
+      hosts: *all_hosts

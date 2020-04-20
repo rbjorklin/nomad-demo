@@ -29,21 +29,50 @@ job "gitea" {
       sticky  = true
       migrate = true
     }
+    network {
+      mode = "bridge"
+    }
+    service {
+      name = "gitea"
+      #tags = ["nomad", "global", "gitea", "http", "expose"]
+      port = "3000"
+      connect {
+        sidecar_service {
+          tags = ["http", "consul-connect", "hostHeaderBegin=gitea"]
+        }
+      }
+      #check {
+      #  name     = "alive"
+      #  type     = "tcp"
+      #  interval = "30s"
+      #  timeout  = "2s"
+      #}
+    }
+    service {
+      name = "giteapostgres"
+      #tags = ["nomad", "global", "gitea", "postgres"]
+      port = "5432"
+      connect {
+        sidecar_service {}
+      }
+      #check {
+      #  name     = "alive"
+      #  type     = "tcp"
+      #  interval = "30s"
+      #  timeout  = "2s"
+      #}
+    }
     task "gitea" {
       driver = "docker"
       env {
         DB_TYPE = "postgres"
-        DB_HOST = "gitea-postgres.service.consul:${NOMAD_PORT_gitea_postgres_postgres}"
+        DB_HOST = "127.0.0.1:5432"
         DB_NAME = "gitea"
         DB_USER = "gitea"
         DB_PASSWD = "gitea"
       }
       config {
-        image = "gitea/gitea:1.8.3"
-        port_map {
-          http = 3000
-          ssh = 22
-        }
+        image = "gitea/gitea:1.11.3"
         mounts = [
             {
               type = "volume"
@@ -53,23 +82,8 @@ job "gitea" {
         ]
       }
       resources {
-        cpu    = 500
+        cpu    = 300
         memory = 512
-        network {
-          port "http" {}
-          port "ssh" {}
-        }
-      }
-      service {
-        name = "gitea"
-        tags = ["nomad", "global", "gitea", "http", "expose"]
-        port = "http"
-        check {
-          name     = "alive"
-          type     = "tcp"
-          interval = "30s"
-          timeout  = "2s"
-        }
       }
     }
     task "postgres" {
@@ -78,37 +92,14 @@ job "gitea" {
         POSTGRES_DB = "gitea"
         POSTGRES_USER = "gitea"
         POSTGRES_PASSWORD = "gitea"
+        PGDATA = "${NOMAD_TASK_DIR}/data"
       }
       config {
-        image = "postgres:11-alpine"
-        port_map {
-          postgres = 5432
-        }
-        mounts = [
-            {
-              type = "volume"
-              target = "/var/lib/postgresql/data"
-              source = "pgdata"
-            }
-        ]
+        image = "postgres:12-alpine"
       }
       resources {
-        cpu    = 500 # 500 MHz
+        cpu    = 300 # 500 MHz
         memory = 256
-        network {
-          port "postgres" {}
-        }
-      }
-      service {
-        name = "gitea-postgres"
-        tags = ["nomad", "global", "gitea", "postgres"]
-        port = "postgres"
-        check {
-          name     = "alive"
-          type     = "tcp"
-          interval = "30s"
-          timeout  = "2s"
-        }
       }
     }
   }

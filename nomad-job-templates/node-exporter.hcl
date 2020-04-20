@@ -21,17 +21,17 @@ job "node_exporter" {
     task "node_exporter" {
       driver = "raw_exec"
       config {
-        command = "node_exporter-0.18.1.linux-amd64/node_exporter" # path is relative to alloc
+        command = "node_exporter-1.0.0-rc.0.linux-amd64/node_exporter" # path is relative to alloc
       }
       artifact {
-        source = "https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz"
+        source = "https://github.com/prometheus/node_exporter/releases/download/v1.0.0-rc.0/node_exporter-1.0.0-rc.0.linux-amd64.tar.gz"
         #destination = "local/" # local/ is the default and relative to alloc
         options {
-          checksum = "sha256:b2503fd932f85f4e5baf161268854bf5d22001869b84f00fd2d1f57b51b72424"
+          checksum = "sha256:f175cffc4b96114e336288c9ea54b54abe793ae6fcbec771c81733ebc2d7be7c"
         }
       }
       resources {
-        cpu    = 500
+        cpu    = 200
         memory = 100
         network {
           port "http" {
@@ -41,7 +41,7 @@ job "node_exporter" {
       }
       service {
         name = "node-exporter"
-        tags = ["nomad", "global", "node_exporter", "http"]
+        tags = ["prometheus=scrape"]
         port = "http"
         check {
           name     = "alive"

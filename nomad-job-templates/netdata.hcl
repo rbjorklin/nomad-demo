@@ -51,7 +51,7 @@ job "netdata" {
         ]
       }
       resources {
-        cpu    = 500
+        cpu    = 200
         memory = 150
         network {
           port "http" {

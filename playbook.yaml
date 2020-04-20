@@ -1,8 +1,22 @@
 # vim: set softtabstop=2 tabstop=2 shiftwidth=2 expandtab autoindent smartindent syntax=yaml:
 
-- hosts: all
+- hosts: consul_servers
+  tasks:
+    - name: ansible-trust-dns
+      include_role:
+        name: ansible-trust-dns
+  tags:
+    - trust
+
+- hosts: consul_servers
+  tasks:
+    # https://www.elastic.co/guide/en/elasticsearch/reference/6.8/vm-max-map-count.html
+    - name: "Set vm.max_map_count to support Elasticsearch workloads"
+      command: sysctl -w vm.max_map_count=262144
+
+- hosts: consul_servers
   vars_files:
-    - vars/main.yaml
+    - vars/consul-server.yaml
       #@roles:
       #@  - consul
   tasks:
@@ -12,15 +26,15 @@
   tags:
     - consul
 
-- hosts: all
-  vars_files:
-    - vars/main.yaml
-  tasks:
-    - name: vault
-      include_role:
-        name: vault
-  tags:
-    - vault
+#- hosts: all
+#  vars_files:
+#    - vars/main.yaml
+#  tasks:
+#    - name: vault
+#      include_role:
+#        name: vault
+#  tags:
+#    - vault
 
 - hosts: all
   tasks:
