@@ -13,3 +13,6 @@
 [submodule "roles/docker"]
 	path = roles/docker
 	url = git@github.com:geerlingguy/ansible-role-docker.git
+[submodule "roles/ansible-trust-dns"]
+	path = roles/ansible-trust-dns
+	url = git@github.com:rbjorklin/ansible-trust-dns.git
